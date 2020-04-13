@@ -1,8 +1,9 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include "Commands.h"
+#include "Common.h"
 
 #define IS_IDENTIFICATOR ('a' <= *buffer && *buffer <= 'z') || ('A' <= *buffer && *buffer <= 'Z') || ('0' <= *buffer && *buffer <= '9') || *buffer == '_'
+#define TRLR "\e[1;35mTranslator:\e[0m"
 
 char *buffer = 0;
 const int xor_hash_val = 1111111111;
@@ -25,7 +26,16 @@ int Identificator ()
 
 int main (int argc, char** argv)
 {
-	FILE *input = fopen (argv[1], "r");
+	if (argc < 3)
+	{
+		printf("%s %s no input or/and output file\n", TRLR, ERROR);
+		return 1;
+	}
+	printf("Translator called for file \"%s\" -o \"%s\"\n", argv[1], argv[2]);
+	return 0;
+
+
+	/*FILE *input = fopen (argv[1], "r");
 	fseek (input, 0, SEEK_END);
 	int NChars = ftell (input);
 	fseek (input, 0, SEEK_SET);
@@ -125,6 +135,6 @@ int val = 0;
 				break;
 		}
 	}
-	return 0;
+	return 0;*/
 }
 

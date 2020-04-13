@@ -13,10 +13,10 @@
 *
 *	return true - Succesful initialisation false - Initialization error
 */
-bool ListConstruct (list *lst, char *name, int length)
+bool ListConstruct (list *lst, int length)
 {
 	lst->size = length + 1;
-	lst->data = (int *) calloc (lst->size, sizeof (int));
+	lst->data = (char **) calloc (lst->size, sizeof (char *));
 	lst->next = (int *) calloc (lst->size, sizeof (int));
 	lst->prev = (int *) calloc (lst->size, sizeof (int));
 
@@ -26,8 +26,6 @@ bool ListConstruct (list *lst, char *name, int length)
 		lst->prev[i] = -1;
 	}
 	lst->prev[lst->size - 1] = -1;
-
-	lst->name = name;
 
 	ON_DEBUG(CheckList (lst);)
 	return true;
@@ -44,7 +42,7 @@ bool ListConstruct (list *lst, char *name, int length)
 bool ListResize (list *lst, int resize_val)
 {
 	lst->size += resize_val;
-	lst->data = (int *) realloc (lst->data, lst->size * sizeof (int));
+	lst->data = (char **) realloc (lst->data, lst->size * sizeof (char *));
 	lst->next = (int *) realloc (lst->next, lst->size * sizeof (int));
 	lst->prev = (int *) realloc (lst->prev, lst->size * sizeof (int));
 
@@ -54,7 +52,7 @@ bool ListResize (list *lst, int resize_val)
 
 		for (int i = lst->size - resize_val; i < lst->size; i++)
 		{
-			lst->data[i] = 0;
+			lst->data[i] = NULL;
 			lst->next[i] = i + 1;
 			lst->prev[i] = -1;
 		}
@@ -80,7 +78,6 @@ bool ListDestruct (list *lst)
 	lst->head = 0;
 	lst->tail = 0;
 	lst->free_elem = 0;
-	lst->name = nullptr;
 	lst->sort = false;
 	return true;
 }
@@ -91,7 +88,7 @@ bool ListDestruct (list *lst)
 *	@param[in] lst List pointer
 *
 *	return true - succesful free false - free error
-*/
+*//*
 bool ListFree (list *lst)
 {
 	memset (lst->data, 0, lst->size * sizeof (int));
@@ -111,7 +108,7 @@ bool ListFree (list *lst)
 	ON_DEBUG(CheckList (lst);)
 	return true;
 }
-
+*/
 /**
 *	Put element in list after pointed
 *
@@ -121,10 +118,9 @@ bool ListFree (list *lst)
 *
 *	return true - Succesful putting false - Putting error
 */
-int InsertAfter (list *lst, int prev_num, int value)
+int InsertAfter (list *lst, int prev_num, char *value)
 {
 	if (lst->prev[prev_num] < 0) return 0;
-
 	int new_num = lst->free_elem;
 
 	if (prev_num == 0 && lst->head == 0) lst->head = new_num;
@@ -155,7 +151,7 @@ int InsertAfter (list *lst, int prev_num, int value)
 *	@param[in] value Element
 *
 *	return true - Succesful putting false - Putting error
-*/
+*//*
 int InsertBefore (list *lst, int next_num, int value)
 {
 	if (next_num == 0) return 0;
@@ -180,7 +176,7 @@ int InsertBefore (list *lst, int next_num, int value)
 	
 	ON_DEBUG(CheckList (lst);)
 	return new_num;
-}
+}*/
 
 /**
 *	Delete pointed element from list
@@ -199,7 +195,7 @@ bool Delete	(list *lst, int num)
 	if (lst->prev[lst->next[num]] != 0) lst->prev[lst->next[num]] = lst->prev[num];
 	lst->next[num] = lst->free_elem;
 	lst->free_elem = num;
-	lst->data[num] = 0;
+	lst->data[num] = NULL;
 	lst->prev[num] = -1;
 
 	if (num != lst->tail) lst->sort = false;
@@ -216,13 +212,28 @@ bool Delete	(list *lst, int num)
 *
 *	return i - Number of finded value 0 - No such element in list
 */
-int FindByValue (list *lst, int value)
+int FindByValue (list *lst, char *value)
 {
 	for (int i = lst->head; i != 0; i = lst->next[i])
 	{
-		if (lst->data[i] == value) return i;
+		if (CmpStr (lst->data[i], value)) return i;
 	}
 	return 0;
+}
+
+
+bool CmpStr (char *str_1, char *str_2)
+{
+	while (*str_1 != '\0' && *str_2 != '\0')
+	{
+		if (*str_1 == *str_2)
+		{
+			str_1++;
+			str_2++;
+		}
+		else return false;
+	}
+	return true;
 }
 
 /**
@@ -232,7 +243,7 @@ int FindByValue (list *lst, int value)
 *	@param[in] order_num Order number of element
 *
 *	return i - Number of finded value 0 - No such element in list
-*/
+*//*
 int FindByOrder (list *lst, int order_num)
 {
 	if (order_num <= 0) return 0;
@@ -247,7 +258,7 @@ int FindByOrder (list *lst, int order_num)
 		}
 		return k;
 	}
-}
+}*/
 
 /**
 *	Sorting list by logic numbers
@@ -255,7 +266,7 @@ int FindByOrder (list *lst, int order_num)
 *	@param[in] lst List pointer
 *
 *	return true - Succesful sort false - Sort error
-*/
+*//*
 bool SortList (list *lst)
 {
 	int i = lst->head;
@@ -283,7 +294,7 @@ bool SortList (list *lst)
 				lst->prev[j + 1] = lst->prev[j];
 				lst->prev[j] = tmp;
 
-				int tmp_data = lst->data[j + 1];
+				char **tmp_data = lst->data[j + 1];
 				lst->data[j + 1] = lst->data[j];
 				lst->data[j] = tmp_data;
 			}
@@ -312,7 +323,7 @@ bool SortList (list *lst)
 	return true;
 
 	ON_DEBUG(CheckList (lst);)
-}
+}*/
 
 /**
 *	Dumping list
@@ -327,13 +338,13 @@ void Dump (list *lst, const char *reason, const char *file, const int line, cons
 {
 	int i = 0;
 	printf("\n============================================================\n");
-	printf("%s from %s (%d) %s()\n\n|List: \"%s\" [%p] ", reason, file, line, function, lst->name, lst);
+	printf("%s from %s (%d) %s()\n\n|List: [%p] ", reason, file, line, function, lst);
 	if (ListOk (lst) == 0) printf("(Ok)\n");
 	else printf("(Error)\n");
 
 	for (i = lst->head; i != 0; i = lst->next[i])
 	{
-		printf("|[%d] = %d\n", i, lst->data[i]);
+		printf("|[%d] = %s\n", i, lst->data[i]);
 	}
 
 	printf ("\n%c", 218);
@@ -357,7 +368,7 @@ void Dump (list *lst, const char *reason, const char *file, const int line, cons
 	printf ("%c\n%cdata: ", 180, 179);
 	for (i = 0; i < lst->size; i++)
 	{
-		printf ("%5d", lst->data[i]);
+		printf ("%5s", lst->data[i]);
 	}
 
 	printf ("%c\n%cnext: ", 179, 179);
@@ -391,7 +402,7 @@ void Dump (list *lst, const char *reason, const char *file, const int line, cons
 *
 *	@param[in] lst List pointer
 *	@param[in] png_file Dumping file name
-*/
+*//*
 void GraphDump (list *lst, char png_file[MAX_PNG_NAME], const char mode)
 {
 	int i = lst->head;
@@ -402,7 +413,7 @@ void GraphDump (list *lst, char png_file[MAX_PNG_NAME], const char mode)
 	if (mode == 's')
 	{
 		fprintf (out, "digraph {\nedge[color = \"blue\"];\nnode[color = \"green4\", fontsize = 20];\nrankdir=LR;\n");
-		fprintf (out, "name[shape = doubleoctagon, label = %s, color = \"goldenrod\", fontsize = 20];\n", lst->name);
+		fprintf (out, "name[shape = doubleoctagon, label = , color = \"goldenrod\", fontsize = 20];\n");
 		fprintf (out, "name->%d[color = \"white\", arrowhead = \"none\"];\n", lst->data[i]);
 		
 	while (lst->next[i] != 0)
@@ -438,7 +449,7 @@ void GraphDump (list *lst, char png_file[MAX_PNG_NAME], const char mode)
 			fprintf (out, "%d[label = \"<n> next\\n%d | %d | num\\n%d | adress\\n%p | <p> prev\\n%d\", style=\"filled\", fillcolor = \"%s\"];\n", i, lst->next[i], lst->data[i], i, &lst->data[i], lst->prev[i], color);
 			elem++;
 		}
-		fprintf(out, "name[shape = doubleoctagon, label = %s, color = \"goldenrod\", fontsize = 20];\n", lst->name);
+		fprintf(out, "name[shape = doubleoctagon, label = , color = \"goldenrod\", fontsize = 20];\n");
 		fprintf(out, "params[shape = record, label = \" head\\n%d | tail\\n%d | free_elem\\n%d | size\\n%d | sort\\n%d | adress\\n%p\", color = \"goldenrod\"];\n", lst->head, lst->tail, lst->free_elem, lst->size, lst->sort, lst);
 		fprintf (out, "name->params->0[arrowhead = \"none\", color = \"white\"];\n");
 
@@ -473,7 +484,7 @@ void GraphDump (list *lst, char png_file[MAX_PNG_NAME], const char mode)
 	system (command);
 	return;
 }
-
+*/
 //Errors: 0 - No errors, 1 - Empty value in prev in full element, 2 - List order is broken, 3 - Wrong pointed tail, 4 - Wrong defined free element
 
 /**
@@ -530,6 +541,6 @@ void CheckList (list *lst)
 				printf("Error: Wrong defined free element\n");
 				break;
 		}
-		Dump (lst, "Error", DEFAULT);
+		//Dump (lst, "Error", DEFAULT);
 	}
 }
