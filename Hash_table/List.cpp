@@ -18,8 +18,7 @@
 class List
 {
 public:
-	const int MAX_PNG_NAME = 20;
-	const int RESIZE_VALUE = 5;
+	const int RESIZE_VALUE = 2;
 	const int HYSTERESIS   = 2;
 	const int START_LIST_SIZE = 2;
 
@@ -91,16 +90,16 @@ List::List ()
 */
 void List::ListResize (int resize_val)
 {
-	size += resize_val;
+	size *= resize_val;
 	data = (char **) realloc (data, size * sizeof (char *));
 	next = (int *) realloc (next, size * sizeof (int));
 	prev = (int *) realloc (prev, size * sizeof (int));
 
 	if (resize_val > 0)
 	{
-		next[free_elem] = size - resize_val;
+		next[free_elem] = size / resize_val;
 
-		for (int i = size - resize_val; i < size; i++)
+		for (int i = size / resize_val; i < size; i++)
 		{
 			data[i] = NULL;
 			next[i] = i + 1;

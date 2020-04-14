@@ -2,7 +2,6 @@
 
 const int HASH_XOR_VAL = 1111111111;
 const char *input_file = "input.txt";
-const char *stat_file = "Statistics.csv";
 
 int Hash_std (char *string);
 
@@ -10,8 +9,7 @@ int Hash_std (char *string);
 class HT
 {
 private:
-	static const int HT_SIZE = 1979;
-
+	static const int HT_SIZE = 811;
 	List Hash_table[HT_SIZE] = {};
 	int (*Hash) (char *);
 
@@ -62,6 +60,7 @@ HT::HT (const char *input_file, int (*Hash_func) (char *))
 	char *buffer = GetBuffer (input_file);
 	char *tmp = buffer;
 	int hash = 0;
+
 	while (*buffer != '\0')
 	{
 		if (*buffer == '\n')
@@ -92,7 +91,7 @@ HT::HT (const char *input_file, int (*Hash_func) (char *))
 */
 void HT::Print_lists_length (const char *file_name)
 {
-	FILE *output = fopen (file_name, "w");
+	FILE *output = fopen (file_name, "a");
 	for (int i = 0; i < HT_SIZE; ++i)
 	{
 		fprintf(output, "%d;", Hash_table[i].free_elem - 1);
@@ -100,34 +99,4 @@ void HT::Print_lists_length (const char *file_name)
 	fprintf(output, "\n");
 	fclose (output);
 	return;
-}
-
-
-/**
-*	Hash count
-*
-*	@param[in] string String pointer
-*
-*	return String hash
-*/
-int Count_hash (char *string)
-{
-	int hash = 0;
-	while (*string != '\0')
-	{
-		hash += *string;
-		hash = hash xor HASH_XOR_VAL;
-		string++;
-	}
-	return hash;
-}
-
-
-int main ()
-{
-	HT HshTb (input_file);
-
-	HshTb.Print_lists_length (stat_file);
-	
-	return 0;
 }
