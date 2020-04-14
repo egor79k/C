@@ -1,8 +1,59 @@
-#include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
 #include <string.h>
 
-#include "List.h"
+//#include "List.h"
+
+
+#define DEBUG 0
+#define DEFAULT __FILE__, __LINE__, __FUNCTION__
+
+#ifdef DEBUG
+	#define ON_DEBUG(code) code
+#else
+	#define ON_DEBUG(code) ;
+#endif
+
+
+class List
+{
+public:
+	const int MAX_PNG_NAME = 20;
+	const int RESIZE_VALUE = 5;
+	const int HYSTERESIS   = 2;
+	const int START_LIST_SIZE = 2;
+
+	char **data = {};
+	int *next = {};
+	int *prev = {};
+	int head = 0;
+	int tail = 0;
+	int size = 0;
+	int free_elem = 1;
+	//bool sort = 1;
+
+	List ();
+	~List ();
+	//bool ListConstruct (int length);
+	void ListResize (int resize_val);
+	//bool ListDestruct (List *lst);
+	//bool ListFree (List *lst);
+
+	int InsertAfter (int prev_num, char *value);
+	//int InsertBefore (int next_num, int value);
+	//bool Delete (int num);
+	int FindByValue (char *value);
+	bool CmpStr (char *str_1, char *str_2);
+	//int FindByOrder (int order_num);
+	//bool SortList (List *lst);
+
+	//void Dump (const char *reason = "Dump", const char *file = "Not pointed file", const int line = -1, const char *function = "Not pointed function");
+	//void GraphDump (char png_file[MAX_PNG_NAME], const char mode = 'l');
+	int ListOk ();
+	void CheckList ();
+};
+
+
 
 /**
 *	List initialization
@@ -13,22 +64,21 @@
 *
 *	return true - Succesful initialisation false - Initialization error
 */
-bool ListConstruct (list *lst, int length)
+List::List ()
 {
-	lst->size = length + 1;
-	lst->data = (char **) calloc (lst->size, sizeof (char *));
-	lst->next = (int *) calloc (lst->size, sizeof (int));
-	lst->prev = (int *) calloc (lst->size, sizeof (int));
+	size = START_LIST_SIZE + 1;
+	data = (char **) calloc (size, sizeof (char *));
+	next = (int *) calloc (size, sizeof (int));
+	prev = (int *) calloc (size, sizeof (int));
 
-	for (int i = 1; i < lst->size - 1; i++)
+	for (int i = 1; i < size - 1; i++)
 	{
-		lst->next[i] = i + 1;
-		lst->prev[i] = -1;
+		next[i] = i + 1;
+		prev[i] = -1;
 	}
-	lst->prev[lst->size - 1] = -1;
+	prev[size - 1] = -1;
 
-	ON_DEBUG(CheckList (lst);)
-	return true;
+	ON_DEBUG(CheckList ();)
 }
 
 /**
@@ -39,28 +89,28 @@ bool ListConstruct (list *lst, int length)
 *
 *	return true - Succesful initialisation false - Initialization error
 */
-bool ListResize (list *lst, int resize_val)
+void List::ListResize (int resize_val)
 {
-	lst->size += resize_val;
-	lst->data = (char **) realloc (lst->data, lst->size * sizeof (char *));
-	lst->next = (int *) realloc (lst->next, lst->size * sizeof (int));
-	lst->prev = (int *) realloc (lst->prev, lst->size * sizeof (int));
+	size += resize_val;
+	data = (char **) realloc (data, size * sizeof (char *));
+	next = (int *) realloc (next, size * sizeof (int));
+	prev = (int *) realloc (prev, size * sizeof (int));
 
 	if (resize_val > 0)
 	{
-		lst->next[lst->free_elem] = lst->size - resize_val;
+		next[free_elem] = size - resize_val;
 
-		for (int i = lst->size - resize_val; i < lst->size; i++)
+		for (int i = size - resize_val; i < size; i++)
 		{
-			lst->data[i] = NULL;
-			lst->next[i] = i + 1;
-			lst->prev[i] = -1;
+			data[i] = NULL;
+			next[i] = i + 1;
+			prev[i] = -1;
 		}
-		lst->next[lst->size - 1] = 0;
+		next[size - 1] = 0;
 	}
 
-	ON_DEBUG(CheckList (lst);)
-	return true;
+	ON_DEBUG(CheckList ();)
+	return;
 }
 
 /**
@@ -70,16 +120,15 @@ bool ListResize (list *lst, int resize_val)
 *
 *	return true - succesful destruction false - destruction error
 */
-bool ListDestruct (list *lst)
+List::~List ()
 {
-	free (lst->data);
-	free (lst->next);
-	free (lst->prev);
-	lst->head = 0;
-	lst->tail = 0;
-	lst->free_elem = 0;
-	lst->sort = false;
-	return true;
+	free (data);
+	free (next);
+	free (prev);
+	head = 0;
+	tail = 0;
+	free_elem = 0;
+	//sort = false;
 }
 
 /**
@@ -118,28 +167,28 @@ bool ListFree (list *lst)
 *
 *	return true - Succesful putting false - Putting error
 */
-int InsertAfter (list *lst, int prev_num, char *value)
+int List::InsertAfter (int prev_num, char *value)
 {
-	if (lst->prev[prev_num] < 0) return 0;
-	int new_num = lst->free_elem;
+	if (prev[prev_num] < 0) return 0;
+	int new_num = free_elem;
 
-	if (prev_num == 0 && lst->head == 0) lst->head = new_num;
-	else if (prev_num == 0 && lst->head != 0) return 0;
-	else if (prev_num != 0 && lst->head == 0) return 0;
+	if (prev_num == 0 && head == 0) head = new_num;
+	else if (prev_num == 0 && head != 0) return 0;
+	else if (prev_num != 0 && head == 0) return 0;
 
-	if (lst->next[new_num] == 0) ListResize (lst, RESIZE_VALUE);
+	if (next[new_num] == 0) ListResize (RESIZE_VALUE);
 
-	lst->free_elem = lst->next[lst->free_elem];
-	lst->data[new_num] = value;
-	lst->next[new_num] = lst->next[prev_num];
-	lst->prev[new_num] = prev_num;
-	if (lst->next[new_num] != 0) lst->prev[lst->next[new_num]] = new_num;
-	else lst->tail = new_num;
-	if (prev_num != 0) lst->next[prev_num] = new_num;
+	free_elem = next[free_elem];
+	data[new_num] = value;
+	next[new_num] = next[prev_num];
+	prev[new_num] = prev_num;
+	if (next[new_num] != 0) prev[next[new_num]] = new_num;
+	else tail = new_num;
+	if (prev_num != 0) next[prev_num] = new_num;
 
-	lst->sort = false;
+	//sort = false;
 
-	ON_DEBUG(CheckList (lst);)
+	ON_DEBUG(CheckList ();)
 	return new_num;
 }
 
@@ -185,7 +234,7 @@ int InsertBefore (list *lst, int next_num, int value)
 *	@param[in] num Number
 *
 *	return true - Succesful delete false - Delete error
-*/
+*//*
 bool Delete	(list *lst, int num)
 {
 	if (lst->prev[num] < 0) return false;
@@ -203,7 +252,7 @@ bool Delete	(list *lst, int num)
 	ON_DEBUG(CheckList (lst);)
 	return true;
 }
-
+*/
 /**
 *	Finding number of pointed element
 *
@@ -212,17 +261,17 @@ bool Delete	(list *lst, int num)
 *
 *	return i - Number of finded value 0 - No such element in list
 */
-int FindByValue (list *lst, char *value)
+int List::FindByValue (char *value)
 {
-	for (int i = lst->head; i != 0; i = lst->next[i])
+	for (int i = head; i != 0; i = next[i])
 	{
-		if (CmpStr (lst->data[i], value)) return i;
+		if (CmpStr (data[i], value)) return i;
 	}
 	return 0;
 }
 
 
-bool CmpStr (char *str_1, char *str_2)
+bool List::CmpStr (char *str_1, char *str_2)
 {
 	while (*str_1 != '\0' && *str_2 != '\0')
 	{
@@ -333,7 +382,7 @@ bool SortList (list *lst)
 *	@param[in] file File name where dump from
 *	@param[in] line Line name where dump from
 *	@param[in] function Function name where dump from
-*/
+*//*
 void Dump (list *lst, const char *reason, const char *file, const int line, const char *function)
 {
 	int i = 0;
@@ -396,7 +445,7 @@ void Dump (list *lst, const char *reason, const char *file, const int line, cons
 	printf("============================================================\n");
 	return;
 }
-
+*/
 /**
 *	Dumping list content in image
 *
@@ -494,24 +543,24 @@ void GraphDump (list *lst, char png_file[MAX_PNG_NAME], const char mode)
 *
 *	return 0 - No errors, 1 - Empty value in prev in full element, 2 - List order is broken, 3 - Wrong pointed tail, 4 - Wrong defined free element
 */
-int ListOk (list *lst)
+int List::ListOk ()
 {
-	int i = lst->head;
-	while (lst->next[i] != 0)
+	int i = head;
+	while (next[i] != 0)
 	{
-		if (lst->prev[i] < 0) return 1;
-		i = lst->next[i];
+		if (prev[i] < 0) return 1;
+		i = next[i];
 	}
-	if (lst->prev[i] < 0) return 1;
-	if (i != lst->tail) return 3;
-	while (lst->prev[i] > 0) i = lst->prev[i];
-	if (i != lst->head) return 2;
+	if (prev[i] < 0) return 1;
+	if (i != tail) return 3;
+	while (prev[i] > 0) i = prev[i];
+	if (i != head) return 2;
 
-	i = lst->free_elem;
+	i = free_elem;
 	while (i != 0)
 	{
-		if (lst->prev[i] >= 0) return 4;
-		i = lst->next[i];
+		if (prev[i] >= 0) return 4;
+		i = next[i];
 	}
 	return 0;
 }
@@ -521,9 +570,9 @@ int ListOk (list *lst)
 *
 *	@param[in] lst List pointer
 */
-void CheckList (list *lst)
+void List::CheckList ()
 {
-	int err = ListOk (lst);
+	int err = ListOk ();
 	if (err != 0)
 	{
 		switch (err)

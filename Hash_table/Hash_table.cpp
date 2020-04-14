@@ -1,59 +1,107 @@
 #include "List.cpp"
 
-const int HT_SIZE = 19;
-const int START_LIST_SIZE = 2;
 const int HASH_XOR_VAL = 1111111111;
-const char input_file[] = "input.txt";
+const char *input_file = "input.txt";
+const char *stat_file = "Statistics.csv";
 
-list Hash_table[HT_SIZE] = {};
-char *buffer = {};
-
-
-int Count_hash (char *string);
+int Hash_std (char *string);
 
 
-int main ()
+class HT
 {
-	FILE *input = fopen (input_file, "r");
-	fseek (input, 0, SEEK_END);
-	int NChars = ftell (input);
-	fseek (input, 0, SEEK_SET);
-	buffer = (char *) calloc (NChars, sizeof (char));
-	fread (buffer, sizeof (char), NChars, input);
-	fclose (input);
+private:
+	static const int HT_SIZE = 1979;
 
-	int i = 0;
+	List Hash_table[HT_SIZE] = {};
+	int (*Hash) (char *);
 
-	for (i = 0; i < HT_SIZE; ++i)
+
+public:
+	HT (const char *input_file, int (*Hash_func) (char *) = Hash_std);
+	~HT () {}
+	void Print_lists_length (const char *file_name);
+};
+
+
+char *GetBuffer (const char *file_name)
+{
+	FILE *in = fopen (file_name, "r");
+	fseek (in, 0, SEEK_END);
+	int NChars = ftell (in);
+	fseek (in, 0, SEEK_SET);
+	char *text = (char *) calloc (NChars, sizeof (char));
+	fread (text, sizeof (char), NChars, in);
+	fclose (in);
+	return text;
+}
+
+
+/**
+*	Default hash function for HT class
+*
+*	@param[in] string String pointer
+*
+*	return String hash
+*/
+int Hash_std (char *string)
+{
+	int hash = 0;
+	while (*string != '\0')
 	{
-		ListConstruct (&Hash_table[i], START_LIST_SIZE);
+		hash += *string;
+		hash = hash xor HASH_XOR_VAL;
+		string++;
 	}
+	return hash;
+}
 
-	i = 0;
+
+HT::HT (const char *input_file, int (*Hash_func) (char *))
+{
+	Hash = Hash_func;
+	char *buffer = GetBuffer (input_file);
 	char *tmp = buffer;
+	int hash = 0;
 	while (*buffer != '\0')
 	{
 		if (*buffer == '\n')
 		{
 			*buffer = '\0';
-			InsertAfter (&Hash_table[Count_hash (tmp)], Hash_table[Count_hash (tmp)].head, tmp);
-			//printf("%15s %d\n", tmp, Count_hash (tmp));
+			hash = Hash (tmp) % HT_SIZE;
+			Hash_table[hash].InsertAfter (Hash_table[hash].head, tmp);
 			tmp = buffer + 1;
 		}
 		buffer++;
 	}
-
-	for (i = 0; i < HT_SIZE; ++i)
-	{
-		//Dump (&Hash_table[i]);
-		printf("%d\n", Hash_table[i].free_elem - 1);
-	}
-
-	char st[] = "stone";
-	int stn = Count_hash (st);
-	printf("%d [%p]  %d = %s\n", stn, &Hash_table[stn], FindByValue (&Hash_table[stn], st), Hash_table[stn].data[FindByValue (&Hash_table[stn], st)]);
-	return 0;
 }
+
+
+/**
+*	Hash count
+*
+*	@param[in] string String pointer
+*
+*	return String hash
+*/
+//void Insert ()
+
+
+
+/**
+*	Print size of each list in file .csv format
+*/
+void HT::Print_lists_length (const char *file_name)
+{
+	FILE *output = fopen (file_name, "w");
+	for (int i = 0; i < HT_SIZE; ++i)
+	{
+		fprintf(output, "%d;", Hash_table[i].free_elem - 1);
+	}
+	fprintf(output, "\n");
+	fclose (output);
+	return;
+}
+
 
 /**
 *	Hash count
@@ -71,5 +119,15 @@ int Count_hash (char *string)
 		hash = hash xor HASH_XOR_VAL;
 		string++;
 	}
-	return hash % HT_SIZE;
+	return hash;
+}
+
+
+int main ()
+{
+	HT HshTb (input_file);
+
+	HshTb.Print_lists_length (stat_file);
+	
+	return 0;
 }
