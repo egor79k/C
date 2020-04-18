@@ -1,35 +1,24 @@
-#include <stdio.h>
+#define IS_IDENTIFICATOR ('a' <= *buffer && *buffer <= 'z') || ('A' <= *buffer && *buffer <= 'Z') || ('0' <= *buffer && *buffer <= '9') || *buffer == '_'
+#include "List.cpp"
 #include "Commands.h"
 #include "Common.h"
-#include "Hash_table.cpp"
 
-#define IS_IDENTIFICATOR ('a' <= *buffer && *buffer <= 'z') || ('A' <= *buffer && *buffer <= 'Z') || ('0' <= *buffer && *buffer <= '9') || *buffer == '_'
 #define TRNS_ERROR "\e[1;35mTranslator: \e[31merror:\e[0m"
 #define PRINT_OUT_STR(x) fprintf(output, "%s", x);
 #define PRINT_OUT_STD(x) fprintf(output, x);
 
-const int xor_hash_val = 1111111111;
+const int XHV = 1111111111;
+const int MAX_FUNC_OR_VAR_NUM = 199;
+const int MAX_NAME_LENGTH = 20;
 
 char *INPUT_FILE_NAME = 0;
 char *buffer = 0;
 FILE *output = 0;
+int CURR_STRING = 0;
 
+List variables[MAX_FUNC_OR_VAR_NUM] = {};
+List functions[MAX_FUNC_OR_VAR_NUM] = {};
 
-int Identificator ()
-{
-	int hash = 0;
-
-	while (IS_IDENTIFICATOR)
-	{
-		hash = hash xor xor_hash_val;
-		hash += *buffer;
-		buffer++;
-	}
-
-	return hash & 0xFFF;
-}
-
-FILE *output = 0;
 
 int FindVar (int hash);
 int FindFunc (int hash);
@@ -78,34 +67,35 @@ int main ()
 hash GetId (const char mode)
 {
 	int hash = 0;
-
-	if (mode == 'V') variables[free_var].name = buffer;
-	else if (mode == 'F') functions[free_func].name = buffer;
+	char *tmp = buffer;
 
 	while (IS_IDENTIFICATOR)
 	{
-		hash = hash xor xor_hash_val;
+		hash = hash xor XHV;
 		hash += *buffer;
 		buffer++;
 	}
 
+	hash %= MAX_FUNC_OR_VAR_NUM;
+
 	switch (mode)
 	{
-		/*case 'S':
-			buffer += i;
-			break;*/
-
 		case 'V':
-			//buffer += i;
-
-			variables[free_var++].hash = hash;
-			//free_var++;
+			if (variables[hash].Find (tmp))
+			{
+				printf("\e[1m%s:%d:%d: %s multiple Variabilis declaration \"\e[31m%s\e[0m\"\n", INPUT_FILE_NAME, CURR_STRING, buffer - tmp_buf_pos, ERROR, tmp_buf_pos);
+				exit (1);
+			}
+			variables[hash].InsertAfter (variables[hash].End (), tmp);
 			break;
 
 		case 'F':
-			//buffer += i;
-			functions[free_func++].hash = hash;
-			//free_func++;
+			if (functions[hash].Find (tmp))
+			{
+				printf("\e[1m%s:%d:%d: %s multiple Definire declaration \"\e[31m%s\e[0m\"\n", INPUT_FILE_NAME, CURR_STRING, buffer - tmp_buf_pos, ERROR, tmp_buf_pos);
+				exit (1);
+			}
+			functions[hash].InsertAfter (functions[hash].End (), tmp);
 			break;
 	}
 	return hash;
@@ -125,15 +115,27 @@ void GetD ()
 		switch (GetId())
 		{
 			case DEF_NUM:
+				if (*buffer != ' ')
+				{
+					printf("\e[1m%s:%d:%d: %s Wrong Definire declaration \"\e[31m%s\e[0m\"\n", INPUT_FILE_NAME, CURR_STRING, buffer - tmp_buf_pos, ERROR, tmp_buf_pos);
+					exit (1);
+				}
+				buffer++;
 				GetDef ();
 				break;
 
 			case VAR_NUM:
-				GetVar ();
+				if (*buffer != ' ')
+				{
+					printf("\e[1m%s:%d:%d: %s Wrong Variabilis declaration \"\e[31m%s\e[0m\"\n", INPUT_FILE_NAME, CURR_STRING, buffer - tmp_buf_pos, ERROR, tmp_buf_pos);
+					exit (1);
+				}
+				buffer++;
+				GetDef ();
 				break;
 
 			default:
-				printf ("\e[1m%s: %s undefined declaration \"\e[31m%s\e[0m\"\n", INPUT_FILE_NAME, ERROR, tmp_buf_pos);
+				printf ("\e[1m%s:%d:%d %s undefined declaration \"\e[31m%s\e[0m\"\n", INPUT_FILE_NAME, ERROR, tmp_buf_pos);
 				exit (1);
 				break;
 		}
@@ -144,9 +146,9 @@ void GetD ()
 
 void GetDef ()
 {
-	double name = GetId ('F');
+	GetId ('F');
 	tree *args = GetVarList ('D');
-	SkipEmpty ();
+	GetB();
 	return OPER(DEF_NUM, args, FUNC(name, GetB()));
 }
 
@@ -509,7 +511,7 @@ tree *GetF ()
 }
 
 
-tree *GetN ()
+double GetN ()
 {
 	double val = 0;
 	int sign = 1;
@@ -535,7 +537,7 @@ tree *GetN ()
 		}
 	}
 	val *= sign;
-	return NUM(val);
+	return val;
 }
 
 

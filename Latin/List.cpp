@@ -28,6 +28,7 @@ private:
 	int free_elem = 1;
 
 	int FindByValue (char *value);
+	bool CmpStr (char *str_1, char *str_2);
 	void ListResize (int resize_val);
 	int ListOk ();
 	void CheckList ();
@@ -181,9 +182,21 @@ int List::FindByValue (char *value)
 {
 	for (int i = head; i != 0; i = next[i])
 	{
-		if (!strcmp(data[i], value)) return i;
+		if (CmpStr(data[i], value)) return i;
 	}
 	return -1;
+}
+
+
+bool List::CmpStr (char *str_1, char *str_2)
+{
+	while (IS_IDENTIFICATOR)
+	{
+		if (*str_1 != *str_2) return false;
+		str_1++;
+		str_2++;
+	}
+	return true;
 }
 
 
