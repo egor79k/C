@@ -1,24 +1,7 @@
 #include "Hash_table.cpp"
 
 const char *stat_file = "Statistics.csv";
-/**
-*	Xor hash
-*
-*	@param[in] string String pointer
-*
-*	return String hash
-*/
-int Xor_hash (char *string)
-{
-	int hash = 0;
-	while (*string != '\0')
-	{
-		hash += *string;
-		hash = hash xor HASH_XOR_VAL;
-		string++;
-	}
-	return hash;
-}
+const char *input_file = "input.txt";
 
 
 /**
@@ -107,7 +90,7 @@ int Cycle_hash (char *string)
 
 
 /**
-*	Xor with ASCII and 1-bit shift left
+*	Jerkins hash function
 *
 *	@param[in] string String pointer
 *
@@ -130,25 +113,60 @@ int Jerkins (char *string)
 }
 
 
+char *GetBuffer (const char *file_name)
+{
+	FILE *in = fopen (file_name, "r");
+	fseek (in, 0, SEEK_END);
+	int NChars = ftell (in);
+	fseek (in, 0, SEEK_SET);
+	char *text = (char *) calloc (NChars, sizeof (char));
+	fread (text, sizeof (char), NChars, in);
+	fclose (in);
+	return text;
+}
+
+
+void Fill_and_print_HT (int (*Hash_func) (char *))
+{
+	HT HshTb (Hash_func);
+	char *buffer = GetBuffer (input_file);
+	char *tmp = buffer;
+	int hash = 0;
+
+	while (*buffer != '\0')
+	{
+		if (*buffer == '\n')
+		{
+			*buffer = '\0';
+			HshTb.Insert (tmp);
+			tmp = buffer + 1;
+		}
+		buffer++;
+	}
+
+	HshTb.Print_lists_length (stat_file);
+/*
+	printf ("bakery - %s\nsaucepan - %s\nfly - %s\n(null) - %s\n", HshTb.Find ("bakery"), HshTb.Find ("saucepan"), HshTb.Find ("fly"), HshTb.Find ("krgsp"));
+	
+	printf ("Delete:%d: ", HshTb.Delete ("bakery"));
+	printf("bakery - %s\n", HshTb.Find ("bakery"));*/
+	return;
+}
+
+
 int main ()
 {
-	HT HshTb_1 (input_file, Const_1);
-	HshTb_1.Print_lists_length (stat_file);
+	Fill_and_print_HT (Const_1);
 
-	HT HshTb_2 (input_file, String_len);
-	HshTb_2.Print_lists_length (stat_file);
+	Fill_and_print_HT (String_len);
 
-	HT HshTb_3 (input_file, ASCII_sum);
-	HshTb_3.Print_lists_length (stat_file);
+	Fill_and_print_HT (ASCII_sum);
 
-	HT HshTb_4 (input_file, ASCII_div_len);
-	HshTb_4.Print_lists_length (stat_file);
+	Fill_and_print_HT (ASCII_div_len);
 
-	HT HshTb_5 (input_file, Cycle_hash);
-	HshTb_5.Print_lists_length (stat_file);
+	Fill_and_print_HT (Cycle_hash);
 
-	HT HshTb_6 (input_file, Jerkins);
-	HshTb_6.Print_lists_length (stat_file);
+	Fill_and_print_HT (Jerkins);
 	
 	return 0;
 }

@@ -1,12 +1,18 @@
 #include <stdio.h>
 #include "Commands.h"
 #include "Common.h"
+#include "Hash_table.cpp"
 
 #define IS_IDENTIFICATOR ('a' <= *buffer && *buffer <= 'z') || ('A' <= *buffer && *buffer <= 'Z') || ('0' <= *buffer && *buffer <= '9') || *buffer == '_'
 #define TRNS_ERROR "\e[1;35mTranslator: \e[31merror:\e[0m"
+#define PRINT_OUT_STR(x) fprintf(output, "%s", x);
+#define PRINT_OUT_STD(x) fprintf(output, x);
 
-char *buffer = 0;
 const int xor_hash_val = 1111111111;
+
+char *INPUT_FILE_NAME = 0;
+char *buffer = 0;
+FILE *output = 0;
 
 
 int Identificator ()
@@ -60,6 +66,7 @@ int main ()
 	}
 	printf("Translator called for file \"%s\" -o \"%s\"\n", argv[1], argv[2]);
 
+	INPUT_FILE_NAME = argv[1];
 	buffer = GetBuffer (argv[1]);
 	output = fopen (argv[2], "w");
 	printf("|Operating...\n");
@@ -68,22 +75,65 @@ int main ()
 }
 
 
+hash GetId (const char mode)
+{
+	int hash = 0;
+
+	if (mode == 'V') variables[free_var].name = buffer;
+	else if (mode == 'F') functions[free_func].name = buffer;
+
+	while (IS_IDENTIFICATOR)
+	{
+		hash = hash xor xor_hash_val;
+		hash += *buffer;
+		buffer++;
+	}
+
+	switch (mode)
+	{
+		/*case 'S':
+			buffer += i;
+			break;*/
+
+		case 'V':
+			//buffer += i;
+
+			variables[free_var++].hash = hash;
+			//free_var++;
+			break;
+
+		case 'F':
+			//buffer += i;
+			functions[free_func++].hash = hash;
+			//free_func++;
+			break;
+	}
+	return hash;
+}
+
+
 void GetD ()
 {
+	char *tmp_buf_pos = 0;
+
+	PRINT_OUT_STR(ASM_BEGIN);
+
 	while (*buffer != '\0')
 	{
+		tmp_buf_pos = buffer;
+
 		switch (GetId())
 		{
-			case L_DEF_NUM:
+			case DEF_NUM:
 				GetDef ();
 				break;
 
-			case L_VAR_NUM:
+			case VAR_NUM:
 				GetVar ();
 				break;
 
 			default:
-				printf ("\nUndefined declaration \"%g\"\n", val);
+				printf ("\e[1m%s: %s undefined declaration \"\e[31m%s\e[0m\"\n", INPUT_FILE_NAME, ERROR, tmp_buf_pos);
 				exit (1);
 				break;
 		}
@@ -95,7 +145,6 @@ void GetD ()
 void GetDef ()
 {
 	double name = GetId ('F');
-	SkipEmpty ();
 	tree *args = GetVarList ('D');
 	SkipEmpty ();
 	return OPER(DEF_NUM, args, FUNC(name, GetB()));
@@ -110,44 +159,6 @@ void SkipWord ()
 }
 
 
-hash GetId (const char mode)
-{
-	int hash = 0;
-	int i = 0;
-	while (IS_IDENTIFICATOR)
-	{
-		if (mode == 'V') variables[free_var].name[i] = buffer[i];
-		else if (mode == 'F') functions[free_func].name[i] = buffer[i];
-		val += buffer[i] * multiplier;
-		i++;
-		multiplier *= 2;
-		if (multiplier > MAX_FUNC_HASH_MULTIPLIER)
-		{
-			printf("Syntax error: unknown function %g\n", val);
-			return 0;
-		}
-	}
-
-	switch (mode)
-	{
-		case 'S':
-			buffer += i;
-			break;
-
-		case 'V':
-			buffer += i;
-			variables[free_var].hash = (int) val;
-			free_var++;
-			break;
-
-		case 'F':
-			buffer += i;
-			functions[free_func].hash = (int) val;
-			free_func++;
-			break;
-	}
-	return val;
-}
 
 
 tree * GetVar ()

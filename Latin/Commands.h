@@ -2,6 +2,7 @@
 // V 1.0.0
 //::::::::::::::::
 
+
 const char *IF       = "si";         const int IF_NUM =       1126;
 const char *ELSE     = "alia";       const int ELSE_NUM =     2083;
 const char *WHILE    = "donec";      const int WHILE_NUM =    3672;
@@ -25,3 +26,7 @@ const char *MUL      = "productum";  const int MUL_NUM =      1550;
 const char *DIV      = "partem";     const int DIV_NUM =      2203;
 const char *POW      = "quatenus";   const int POW_NUM =      2174;
 const char *CLOSE    = "simul";      const int CLOSE_NUM =    3685;
+
+
+
+const char *ASM_BEGIN = "global _start\n\nsection .text\n\n_start:\n";

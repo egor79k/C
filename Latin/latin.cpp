@@ -133,14 +133,17 @@ int main (int argc, char ** argv)
 
 				case 'p':
 					ONLY_P = true;
+					SAVE_INTER_FILES = true;
 					break;
 
 				case 't':
 					ONLY_P_T = true;
+					SAVE_INTER_FILES = true;
 					break;
 
 				case 'n':
 					ONLY_P_T_N = true;
+					SAVE_INTER_FILES = true;
 					break;
 
 				default:
