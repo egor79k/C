@@ -11,14 +11,13 @@
 	#define ON_DEBUG(code) ;
 #endif
 
+const int RESIZE_VALUE = 2;
+const int HYSTERESIS   = 2;
+const int START_LIST_SIZE = 2;
 
-class List
+
+struct List
 {
-private:
-	const int RESIZE_VALUE = 2;
-	const int HYSTERESIS   = 2;
-	const int START_LIST_SIZE = 2;
-
 	char **data = {};
 	int *next = {};
 	int *prev = {};
@@ -26,91 +25,93 @@ private:
 	int tail = 0;
 	int size = 0;
 	int free_elem = 1;
-
-	int FindByValue (char *value);
-	void ListResize (int resize_val);
-	int ListOk ();
-	void CheckList ();
-
-public:
-	List ();
-	~List ();
-
-	int InsertAfter (int prev_num, char *value);
-	bool Delete (char *value);
-	char *Find (char *value);
-	int End ();
 };
 
 
+bool ListConstruct (List *lst);
+bool ListResize (List *lst, int resize_val);
+void ListDestruct (List *lst);
 
-/**
-*	List constructor
-*/
-List::List ()
+int InsertAfter (List *lst, int prev_num, char *value);
+bool Delete (List *lst, char *value);
+int FindByValue (List *lst, char *value);
+char *Find (List *lst, char *value);
+int End (List *lst);
+
+int ListOk (List *lst);
+void CheckList (List *lst);
+
+
+bool ListConstruct (List *lst)
 {
-	size = START_LIST_SIZE + 1;
-	data = (char **) calloc (size, sizeof (char *));
-	next = (int *) calloc (size, sizeof (int));
-	prev = (int *) calloc (size, sizeof (int));
-
-	for (int i = 1; i < size - 1; i++)
+	lst->size = START_LIST_SIZE + 1;
+	lst->data = (char **) calloc (lst->size, sizeof (char *));
+	lst->next = (int *) calloc (lst->size, sizeof (int));
+	lst->prev = (int *) calloc (lst->size, sizeof (int));
+	for (int i = 1; i < lst->size - 1; i++)
 	{
-		next[i] = i + 1;
-		prev[i] = -1;
+		lst->next[i] = i + 1;
+		lst->prev[i] = -1;
 	}
-	prev[size - 1] = -1;
+	lst->prev[lst->size - 1] = -1;
+	lst->free_elem = 1;
 
-	ON_DEBUG(CheckList ();)
+	ON_DEBUG(CheckList (lst);)
+	return true;
 }
 
 
 /**
-*	List destructor
-*/
-List::~List ()
-{
-	free (data);
-	free (next);
-	free (prev);
-}
-
-
-/**
-*	Change list size
+*	Change List size
 *
 *	@param[in] lst List pointer
 *	@param[in] resize_val Value of extension
 *
 *	return true - Succesful initialisation false - Initialization error
 */
-void List::ListResize (int resize_val)
+bool ListResize (List *lst, int resize_val)
 {
-	size *= resize_val;
-	data = (char **) realloc (data, size * sizeof (char *));
-	next = (int *) realloc (next, size * sizeof (int));
-	prev = (int *) realloc (prev, size * sizeof (int));
+	lst->size *= resize_val;
+	lst->data = (char **) realloc (lst->data, lst->size * sizeof (char *));
+	lst->next = (int *) realloc (lst->next, lst->size * sizeof (int));
+	lst->prev = (int *) realloc (lst->prev, lst->size * sizeof (int));
 
 	if (resize_val > 0)
 	{
-		next[free_elem] = size / resize_val;
+		lst->next[lst->free_elem] = lst->size / resize_val;
 
-		for (int i = size / resize_val; i < size; i++)
+		for (int i = lst->size / resize_val; i < lst->size; i++)
 		{
-			data[i] = NULL;
-			next[i] = i + 1;
-			prev[i] = -1;
+			lst->data[i] = NULL;
+			lst->next[i] = i + 1;
+			lst->prev[i] = -1;
 		}
-		next[size - 1] = 0;
+		lst->next[lst->size - 1] = 0;
 	}
 
-	ON_DEBUG(CheckList ();)
+	ON_DEBUG(CheckList (lst);)
+	return true;
+}
+
+
+/**
+*	Destruct List
+*
+*	@param[in] lst List pointer
+*
+*	return true - succesful destruction false - destruction error
+*/
+void ListDestruct (List *lst)
+{
+	free (lst->data);
+	free (lst->next);
+	free (lst->prev);
 	return;
 }
 
 
 /**
-*	Put element in list after pointed
+*	Put element in List after pointed
 *
 *	@param[in] lst List pointer
 *	@param[in] prev_num Previous number
@@ -118,53 +119,53 @@ void List::ListResize (int resize_val)
 *
 *	return true - Succesful putting false - Putting error
 */
-int List::InsertAfter (int prev_num, char *value)
+int InsertAfter (List *lst, int prev_num, char *value)
 {
-	if (prev[prev_num] < 0) return 0;
-	int new_num = free_elem;
+	if (lst->prev[prev_num] < 0) return 0;
 
-	if (prev_num == 0 && head == 0) head = new_num;
-	else if (prev_num == 0 && head != 0) return 0;
-	else if (prev_num != 0 && head == 0) return 0;
+	int new_num = lst->free_elem;
+	if (prev_num == 0 && lst->head == 0) lst->head = new_num;
+	else if (prev_num == 0 && lst->head != 0) return 0;
+	else if (prev_num != 0 && lst->head == 0) return 0;
 
-	if (next[new_num] == 0) ListResize (RESIZE_VALUE);
+	if (lst->next[new_num] == 0) ListResize (lst, RESIZE_VALUE);
 
-	free_elem = next[free_elem];
-	data[new_num] = value;
-	next[new_num] = next[prev_num];
-	prev[new_num] = prev_num;
-	if (next[new_num] != 0) prev[next[new_num]] = new_num;
-	else tail = new_num;
-	if (prev_num != 0) next[prev_num] = new_num;
-
-	ON_DEBUG(CheckList ();)
+	lst->free_elem = lst->next[lst->free_elem];
+	lst->data[new_num] = value;
+	lst->next[new_num] = lst->next[prev_num];
+	lst->prev[new_num] = prev_num;
+	if (lst->next[new_num] != 0) lst->prev[lst->next[new_num]] = new_num;
+	else lst->tail = new_num;
+	if (prev_num != 0) lst->next[prev_num] = new_num;
+	
+	ON_DEBUG(CheckList (lst);)
 	return new_num;
 }
 
 
 /**
-*	Delete pointed element from list
+*	Delete pointed element from List
 *
 *	@param[in] lst List pointer
 *	@param[in] num Number
 *
 *	return true - Succesful delete false - Delete error
 */
-bool List::Delete (char *value)
+bool Delete	(List *lst, char *value)
 {
-	int num = FindByValue (value);
+	int num = FindByValue (lst, value);
 	if (num < 0) return false;
-	if (prev[num] < 0) return false;
-	if (num == head) head = next[num];
-	if (num == tail) tail = prev[num];
-	if (prev[num] != 0) next[prev[num]] = next[num];
-	if (prev[next[num]] != 0) prev[next[num]] = prev[num];
-	next[num] = free_elem;
-	free_elem = num;
-	data[num] = NULL;
-	prev[num] = -1;
+	if (lst->prev[num] < 0) return false;
+	if (num == lst->head) lst->head = lst->next[num];
+	if (num == lst->tail) lst->tail = lst->prev[num];
+	if (lst->prev[num] != 0) lst->next[lst->prev[num]] = lst->next[num];
+	if (lst->prev[lst->next[num]] != 0) lst->prev[lst->next[num]] = lst->prev[num];
+	lst->next[num] = lst->free_elem;
+	lst->free_elem = num;
+	lst->data[num] = NULL;
+	lst->prev[num] = -1;
 
-	ON_DEBUG(CheckList ();)
+	ON_DEBUG(CheckList (lst);)
 	return true;
 }
 
@@ -175,13 +176,13 @@ bool List::Delete (char *value)
 *	@param[in] lst List pointer
 *	@param[in] value Value which finding
 *
-*	return i - Index of finded element; -1 - No such element in list
+*	return i - Index of finded element; -1 - No such element in List
 */
-int List::FindByValue (char *value)
+int FindByValue (List *lst, char *value)
 {
-	for (int i = head; i != 0; i = next[i])
+	for (int i = lst->head; i != 0; i = lst->next[i])
 	{
-		if (!strcmp(data[i], value)) return i;
+		if (!strcmp(lst->data[i], value)) return i;
 	}
 	return -1;
 }
@@ -193,65 +194,65 @@ int List::FindByValue (char *value)
 *	@param[in] lst List pointer
 *	@param[in] value Value which finding
 *
-*	return data[i] - Pointer to finded value; NULL - No such element in list
+*	return data[i] - Pointer to finded value; NULL - No such element in List
 */
-char *List::Find (char *value)
+char *Find (List *lst, char *value)
 {
-	int i = FindByValue (value);
-	if (i >= 0) return data[i];
+	int i = FindByValue (lst, value);
+	if (i >= 0) return lst->data[i];
 	return NULL;
 }
 
 
 /**
-*	Return list tail
+*	Return List tail
 *
-*	return tail - list end
+*	return tail - List end
 */
-int List::End ()
+int End (List *lst)
 {
-	return tail;
+	return lst->tail;
 }
 
 //Errors: 0 - No errors, 1 - Empty value in prev in full element, 2 - List order is broken, 3 - Wrong pointed tail, 4 - Wrong defined free element
 
 /**
-*	Checking list for errors
+*	Checking List for errors
 *
 *	@param[in] lst List pointer
 *
 *	return 0 - No errors, 1 - Empty value in prev in full element, 2 - List order is broken, 3 - Wrong pointed tail, 4 - Wrong defined free element
 */
-int List::ListOk ()
+int ListOk (List *lst)
 {
-	int i = head;
-	while (next[i] != 0)
+	int i = lst->head;
+	while (lst->next[i] != 0)
 	{
-		if (prev[i] < 0) return 1;
-		i = next[i];
+		if (lst->prev[i] < 0) return 1;
+		i = lst->next[i];
 	}
-	if (prev[i] < 0) return 1;
-	if (i != tail) return 3;
-	while (prev[i] > 0) i = prev[i];
-	if (i != head) return 2;
+	if (lst->prev[i] < 0) return 1;
+	if (i != lst->tail) return 3;
+	while (lst->prev[i] > 0) i = lst->prev[i];
+	if (i != lst->head) return 2;
 
-	i = free_elem;
+	i = lst->free_elem;
 	while (i != 0)
 	{
-		if (prev[i] >= 0) return 4;
-		i = next[i];
+		if (lst->prev[i] >= 0) return 4;
+		i = lst->next[i];
 	}
 	return 0;
 }
 
 /**
-*	Printing list errors
+*	Printing List errors
 *
 *	@param[in] lst List pointer
 */
-void List::CheckList ()
+void CheckList (List *lst)
 {
-	int err = ListOk ();
+	int err = ListOk (lst);
 	if (err != 0)
 	{
 		switch (err)

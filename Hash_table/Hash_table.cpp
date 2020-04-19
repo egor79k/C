@@ -7,23 +7,20 @@
 int Hash_std (char *string);
 
 
-class HT
+struct HT
 {
-private:
-	static const int HT_SIZE = 811;
-	List Hash_table[HT_SIZE] = {};
+	List *Hash_table;
+	int size;
 	int (*Hash) (char *);
-
-
-public:
-	HT (int (*Hash_func) (char *) = Hash_std);
-	~HT () {}
-
-	void Insert (char *string);
-	bool Delete (char *string);
-	char *Find (char *string);
-	void Print_lists_length (const char *file_name);
 };
+
+	bool HT_Construct (HT *HshTb, int size, int (*Hash_func) (char *) = Hash_std);
+	void HT_Destruct (HT *HshTb);
+
+	void HT_Insert (char *string);
+	bool HT_Delete (char *string);
+	char *HT_Find (char *string);
+	void Print_lists_length (const char *file_name);
 
 
 /**
@@ -52,9 +49,26 @@ int Hash_std (char *string)
 *
 *	@param[in] Hash_func Hash function pointer
 */
-HT::HT (int (*Hash_func) (char *))
+bool HT_Construct (HT *HshTb, int size, int (*Hash_func) (char *))
 {
-	Hash = Hash_func;
+	HshTb->size = size;
+	HshTb->Hash = Hash_func;
+	HshTb->Hash_table = (List *) calloc (HshTb->size, sizeof (List));
+	for (int i = 0; i < HshTb->size; ++i) ListConstruct (&HshTb->Hash_table[i]);
+	return true;
+}
+
+
+/**
+*	Hash table destructor
+*
+*	@param[in] Hash_func Hash function pointer
+*/
+void HT_Destruct (HT *HshTb)
+{
+	for (int i = 0; i < HshTb->size; ++i) ListDestruct (&HshTb->Hash_table[i]);
+	free (HshTb->Hash_table);
+	return;
 }
 
 
@@ -63,10 +77,10 @@ HT::HT (int (*Hash_func) (char *))
 *
 *	@param[in] string String pointer
 */
-void HT::Insert (char *string)
+void HT_Insert (HT *HshTb, char *string)
 {
-	int hash = Hash (string) % HT_SIZE;
-	Hash_table[hash].InsertAfter (Hash_table[hash].End (), string);
+	int hash = HshTb->Hash (string) % HshTb->size;
+	InsertAfter (&HshTb->Hash_table[hash], End (&HshTb->Hash_table[hash]), string);
 	return;
 }
 
@@ -78,9 +92,10 @@ void HT::Insert (char *string)
 *
 *	return true - success delete | false - no such element
 */
-bool HT::Delete (char *string)
+bool HT_Delete (HT *HshTb, char *string)
 {
-	return Hash_table[Hash (string) % HT_SIZE].Delete (string);
+	int hash = HshTb->Hash (string) % HshTb->size;
+	return Delete (&HshTb->Hash_table[hash], string);
 }
 
 
@@ -91,10 +106,10 @@ bool HT::Delete (char *string)
 *
 *	return Pointer to finded element | NULL - No such element
 */
-char *HT::Find (char *string)
+char *HT_Find (HT *HshTb, char *string)
 {
-	int hash = Hash (string) % HT_SIZE;
-	return Hash_table[hash].Find (string);
+	int hash = HshTb->Hash (string) % HshTb->size;
+	return Find (&HshTb->Hash_table[hash], string);
 }
 
 
@@ -103,12 +118,12 @@ char *HT::Find (char *string)
 *
 *	@param[in] file_name File to print into
 */
-void HT::Print_lists_length (const char *file_name)
+void Print_lists_length (HT *HshTb, const char *file_name)
 {
 	FILE *output = fopen (file_name, "a");
-	for (int i = 0; i < HT_SIZE; ++i)
+	for (int i = 0; i < HshTb->size; ++i)
 	{
-		fprintf(output, "%d;", Hash_table[i].End ());
+		fprintf(output, "%d;", End (&HshTb->Hash_table[i]));
 	}
 	fprintf(output, "\n");
 	fclose (output);

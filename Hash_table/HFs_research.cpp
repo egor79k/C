@@ -2,6 +2,7 @@
 
 const char *stat_file = "Statistics.csv";
 const char *input_file = "input.txt";
+const int HT_SIZE = 811;
 
 
 /**
@@ -128,7 +129,8 @@ char *GetBuffer (const char *file_name)
 
 void Fill_and_print_HT (int (*Hash_func) (char *))
 {
-	HT HshTb (Hash_func);
+	HT HshTb;
+	HT_Construct (&HshTb, HT_SIZE, Hash_func);
 	char *buffer = GetBuffer (input_file);
 	char *tmp = buffer;
 	int hash = 0;
@@ -138,34 +140,41 @@ void Fill_and_print_HT (int (*Hash_func) (char *))
 		if (*buffer == '\n')
 		{
 			*buffer = '\0';
-			HshTb.Insert (tmp);
+			HT_Insert (&HshTb, tmp);
 			tmp = buffer + 1;
 		}
 		buffer++;
 	}
 
-	HshTb.Print_lists_length (stat_file);
-/*
-	printf ("bakery - %s\nsaucepan - %s\nfly - %s\n(null) - %s\n", HshTb.Find ("bakery"), HshTb.Find ("saucepan"), HshTb.Find ("fly"), HshTb.Find ("krgsp"));
+	Print_lists_length (&HshTb, stat_file);
+
+	/*printf ("bakery - %s\nsaucepan - %s\nfly - %s\n(null) - %s\n", HT_Find (&HshTb, "bakery"), HT_Find (&HshTb, "saucepan"), HT_Find (&HshTb, "fly"), HT_Find (&HshTb, "krgsp"));
 	
-	printf ("Delete:%d: ", HshTb.Delete ("bakery"));
-	printf("bakery - %s\n", HshTb.Find ("bakery"));*/
+	printf ("Delete:%d: ", HT_Delete (&HshTb, "bakery"));
+	printf("bakery - %s\n", HT_Find (&HshTb, "bakery"));*/
+	HT_Destruct (&HshTb);
 	return;
 }
 
 
 int main ()
 {
+	printf("Constant 1 hashing...\n");
 	Fill_and_print_HT (Const_1);
 
+	printf("String length hashing...\n");
 	Fill_and_print_HT (String_len);
 
+	printf("ASCII num hashing...\n");
 	Fill_and_print_HT (ASCII_sum);
 
+	printf("ASCII num divided by length hashing...\n");
 	Fill_and_print_HT (ASCII_div_len);
 
+	printf("Cycle hashing...\n");
 	Fill_and_print_HT (Cycle_hash);
 
+	printf("Jerkins length hashing...\n");
 	Fill_and_print_HT (Jerkins);
 	
 	return 0;
