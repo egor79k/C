@@ -4,23 +4,23 @@
 #include "List.cpp"
 
 
-int Hash_std (char *string);
+unsigned int Hash_std (char *string);
 
 
 struct HT
 {
 	List *Hash_table;
 	int size;
-	int (*Hash) (char *);
+	unsigned int (*Hash) (char *);
 };
 
-	bool HT_Construct (HT *HshTb, int size, int (*Hash_func) (char *) = Hash_std);
-	void HT_Destruct (HT *HshTb);
+bool HT_Construct (HT *HshTb, int size, unsigned int (*Hash_func) (char *) = Hash_std);
+void HT_Destruct (HT *HshTb);
 
-	void HT_Insert (char *string);
-	bool HT_Delete (char *string);
-	char *HT_Find (char *string);
-	void Print_lists_length (const char *file_name);
+bool HT_Insert (HT *HshTb, char *string);
+bool HT_Delete (HT *HshTb, char *string);
+char *HT_Find (HT *HshTb, char *string);
+void Print_lists_length (HT *HshTb, const char *file_name);
 
 
 /**
@@ -30,10 +30,10 @@ struct HT
 *
 *	return String hash
 */
-int Hash_std (char *string)
+unsigned int Hash_std (char *string)
 {
-	const int HXV = 1111111111;
-	int hash = 0;
+	const unsigned int HXV = 1111111111;
+	unsigned int hash = 0;
 	while (*string != '\0')
 	{
 		hash += *string;
@@ -49,7 +49,7 @@ int Hash_std (char *string)
 *
 *	@param[in] Hash_func Hash function pointer
 */
-bool HT_Construct (HT *HshTb, int size, int (*Hash_func) (char *))
+bool HT_Construct (HT *HshTb, int size, unsigned int (*Hash_func) (char *))
 {
 	HshTb->size = size;
 	HshTb->Hash = Hash_func;
@@ -77,11 +77,15 @@ void HT_Destruct (HT *HshTb)
 *
 *	@param[in] string String pointer
 */
-void HT_Insert (HT *HshTb, char *string)
+bool HT_Insert (HT *HshTb, char *string)
 {
-	int hash = HshTb->Hash (string) % HshTb->size;
-	InsertAfter (&HshTb->Hash_table[hash], End (&HshTb->Hash_table[hash]), string);
-	return;
+	if (string != NULL)
+	{
+		unsigned int hash = HshTb->Hash (string) % HshTb->size;
+		InsertAfter (&HshTb->Hash_table[hash], End (&HshTb->Hash_table[hash]), string);
+		return true;
+	}
+	return false;
 }
 
 
@@ -94,8 +98,12 @@ void HT_Insert (HT *HshTb, char *string)
 */
 bool HT_Delete (HT *HshTb, char *string)
 {
-	int hash = HshTb->Hash (string) % HshTb->size;
-	return Delete (&HshTb->Hash_table[hash], string);
+	if (string != NULL)
+	{
+		unsigned int hash = HshTb->Hash (string) % HshTb->size;
+		return Delete (&HshTb->Hash_table[hash], string);
+	}
+	return false;
 }
 
 
@@ -108,8 +116,12 @@ bool HT_Delete (HT *HshTb, char *string)
 */
 char *HT_Find (HT *HshTb, char *string)
 {
-	int hash = HshTb->Hash (string) % HshTb->size;
-	return Find (&HshTb->Hash_table[hash], string);
+	if (string != NULL)
+	{
+		unsigned int hash = HshTb->Hash (string) % HshTb->size;
+		return Find (&HshTb->Hash_table[hash], string);
+	}
+	return NULL;
 }
 
 

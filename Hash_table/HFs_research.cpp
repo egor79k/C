@@ -12,7 +12,7 @@ const int HT_SIZE = 811;
 *
 *	return 1
 */
-int Const_1 (char *string)
+unsigned int Const_1 (char *string)
 {
 	return 1;
 }
@@ -25,7 +25,7 @@ int Const_1 (char *string)
 *
 *	return String hash
 */
-int String_len (char *string)
+unsigned int String_len (char *string)
 {
 	return strlen (string);
 }
@@ -38,9 +38,9 @@ int String_len (char *string)
 *
 *	return String hash
 */
-int ASCII_sum (char *string)
+unsigned int ASCII_sum (char *string)
 {
-	int hash = 0;
+	unsigned int hash = 0;
 	while (*string != '\0')
 	{
 		hash += *string;
@@ -57,10 +57,10 @@ int ASCII_sum (char *string)
 *
 *	return String hash
 */
-int ASCII_div_len (char *string)
+unsigned int ASCII_div_len (char *string)
 {
-	int hash = 0;
-	int len = strlen (string);
+	unsigned int hash = 0;
+	unsigned int len = strlen (string);
 	while (*string != '\0')
 	{
 		hash += *string;
@@ -77,12 +77,12 @@ int ASCII_div_len (char *string)
 *
 *	return String hash
 */
-int Cycle_hash (char *string)
+unsigned int Cycle_hash (char *string)
 {
-	int hash = 0;
+	unsigned int hash = 0;
 	while (*string != '\0')
 	{
-		hash = hash xor (int) *string;
+		hash = hash xor (unsigned int) *string;
 		hash = hash << 1 | hash >> 31;
 		string++;
 	}
@@ -97,9 +97,9 @@ int Cycle_hash (char *string)
 *
 *	return String hash
 */
-int Jerkins (char *string)
+unsigned int Jerkins (char *string)
 {
-	unsigned short hash = 0;
+	unsigned int hash = 0;
 	while (*string != '\0')
 	{
 		hash += *string;
@@ -110,7 +110,29 @@ int Jerkins (char *string)
 	hash += (hash << 3);
 	hash ^= (hash >> 11);
 	hash += (hash << 15);
-	return (int) hash;
+	return hash;
+}
+
+
+/**
+*	FNV hash function v.1a
+*
+*	@param[in] string String pointer
+*
+*	return String hash
+*/
+unsigned int FNV (char *string)
+{
+	const unsigned int FNV_32_PRIME = 0x01000193;
+	unsigned int hash = 0x811c9dc5;
+
+	while (*string)
+	{
+		hash ^= *string++;
+		hash *= FNV_32_PRIME;
+	}
+
+	return hash;
 }
 
 
@@ -127,13 +149,12 @@ char *GetBuffer (const char *file_name)
 }
 
 
-void Fill_and_print_HT (int (*Hash_func) (char *))
+void Fill_and_print_HT (unsigned int (*Hash_func) (char *))
 {
 	HT HshTb;
 	HT_Construct (&HshTb, HT_SIZE, Hash_func);
 	char *buffer = GetBuffer (input_file);
 	char *tmp = buffer;
-	int hash = 0;
 
 	while (*buffer != '\0')
 	{
@@ -174,8 +195,11 @@ int main ()
 	printf("Cycle hashing...\n");
 	Fill_and_print_HT (Cycle_hash);
 
-	printf("Jerkins length hashing...\n");
+	printf("Jerkins hashing...\n");
 	Fill_and_print_HT (Jerkins);
+
+	printf("FNV hashing...\n");
+	Fill_and_print_HT (FNV);
 	
 	return 0;
 }

@@ -12,5 +12,11 @@ int main ()
 	printf("| \e[0;2m\\e[2m | ");
 	ALL_COLORS
 	printf("\e[0m\n");
+	
+	for (int color = 0; color <= 109; ++color)
+	{
+		printf("\e[%dm%d\t\e[0m", color, color);
+		if ((color + 1) % 10 == 0) printf("\n");
+	}
 	return 0;
 }
