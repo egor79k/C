@@ -136,6 +136,55 @@ unsigned int FNV (char *string)
 }
 
 
+/**
+*	MurMurHash v.2A
+*
+*	@param[in] string String pointer
+*
+*	return String hash
+*/
+#define mmix(h,k) { k *= m; k ^= k >> r; k *= m; h *= m; h ^= k; }
+const unsigned int MUR_SEED = 42764812;
+
+unsigned int MurmurHash (char *string)
+{
+	const unsigned int m = 0x5bd1e995;
+	const int r = 24;
+	unsigned int l = strlen (string);
+	unsigned int len = l;
+	unsigned int h = MUR_SEED;
+	unsigned int k;
+
+	while (len >= 4)
+	{
+		k = *(unsigned int*)string;
+
+		mmix(h,k);
+
+		string += 4;
+		len -= 4;
+	}
+
+	unsigned int t = 0;
+
+	switch (len)
+	{
+	case 3: t ^= string[2] << 16;
+	case 2: t ^= string[1] << 8;
+	case 1: t ^= string[0];
+	};
+
+	mmix(h,t);
+	mmix(h,l);
+
+	h ^= h >> 13;
+	h *= m;
+	h ^= h >> 15;
+
+	return h;
+}
+
+
 char *GetBuffer (const char *file_name)
 {
 	FILE *in = fopen (file_name, "r");
@@ -200,6 +249,9 @@ int main ()
 
 	printf("FNV hashing...\n");
 	Fill_and_print_HT (FNV);
+
+	printf("MurMur hashing...\n");
+	Fill_and_print_HT (MurmurHash);
 	
 	return 0;
 }

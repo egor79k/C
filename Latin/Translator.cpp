@@ -143,7 +143,7 @@ void GetD ()
 	return;
 }
 
-
+/*
 void GetDef ()
 {
 	GetId ('F');
@@ -547,4 +547,4 @@ tree *GetV ()
 	if (FindVar (val) >= 0) SkipWord ();
 	else return NULL;
 	return VAR(val);
-}
+}*/
