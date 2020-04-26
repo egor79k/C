@@ -27,4 +27,3 @@ us_t SCREEN_PY = 36;
 uc_t **MATRIX = 0;	// |             Gobal world matrix
 					// +---> M[][*]
 ull_t COUNTER = 0;
-

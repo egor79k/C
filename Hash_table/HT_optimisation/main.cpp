@@ -66,11 +66,8 @@ char *GetBuffer (const char *file_name)
 }
 
 
-void Fill_and_print_HT (unsigned int (*Hash_func) (char *))
+void Fill_HT (HT HshTb, char *buffer)
 {
-	HT HshTb;
-	HT_Construct (&HshTb, HT_SIZE, Hash_func);
-	char *buffer = GetBuffer (input_file);
 	char *tmp = buffer;
 
 	while (*buffer != '\0')
@@ -83,15 +80,25 @@ void Fill_and_print_HT (unsigned int (*Hash_func) (char *))
 		}
 		buffer++;
 	}
-
-	Print_lists_length (&HshTb, stat_file);
-
-	/*printf ("bakery - %s\nsaucepan - %s\nfly - %s\n(null) - %s\n", HT_Find (&HshTb, "bakery"), HT_Find (&HshTb, "saucepan"), HT_Find (&HshTb, "fly"), HT_Find (&HshTb, "krgsp"));
-	
-	printf ("Delete:%d: ", HT_Delete (&HshTb, "bakery"));
-	printf("bakery - %s\n", HT_Find (&HshTb, "bakery"));*/
-	HT_Destruct (&HshTb);
 	return;
+}
+
+
+void Find_in_HT (HT HshTb, char *buffer)
+{
+	int i = 0;
+	char *tmp = buffer;
+	while (i < 19783)
+	{
+		if (*buffer == '\0')
+		{
+			printf("%s\n", HT_Find (&HshTb, tmp));
+			//HT_Find (&HshTb, tmp);
+			tmp = buffer + 1;
+			i++;
+		}
+		buffer++;
+	}
 }
 
 
@@ -100,24 +107,17 @@ int main ()
 	HT HshTb;
 	HT_Construct (&HshTb, HT_SIZE, MurmurHash);
 	char *buffer = GetBuffer (input_file);
-	char *tmp = buffer;
+	char *buff_start = buffer;
 
-	while (*buffer != '\0')
-	{
-		if (*buffer == '\n')
-		{
-			*buffer = '\0';
-			HT_Insert (&HshTb, tmp);
-			tmp = buffer + 1;
-		}
-		buffer++;
-	}
+	Fill_HT (HshTb, buffer);
+	Find_in_HT (HshTb, buff_start);
 
 	/*printf ("bakery - %s\nsaucepan - %s\nfly - %s\n(null) - %s\n", HT_Find (&HshTb, "bakery"), HT_Find (&HshTb, "saucepan"), HT_Find (&HshTb, "fly"), HT_Find (&HshTb, "krgsp"));
 	
 	printf ("Delete:%d: ", HT_Delete (&HshTb, "bakery"));
 	printf("bakery - %s\n", HT_Find (&HshTb, "bakery"));*/
 	HT_Destruct (&HshTb);
-	return;
+	
+	free (buff_start);
 	return 0;
 }

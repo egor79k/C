@@ -24,6 +24,7 @@ int main ()
 
 	int ch = 0;
 	char player = '^';
+	int pause = 0;
 	SetPlayer
 
 	while (true)
@@ -31,21 +32,38 @@ int main ()
 		COUNTER++;
 		ON_DEBUG_PROF (printf ("\e[4;1HTime: %llu", COUNTER));
 
+		if (!MATRIX[GLOBAL_PY + 1][GLOBAL_PX] && COUNTER % 40000 == pause % 40000)
+		{
+			RemovePlayer
+			GLOBAL_PY++;
+			SCREEN_PY = GLOBAL_PY % LINES;
+			if (SCREEN_PY == 0) SCREEN_PY = LINES;
+			if (SCREEN_PY == 1)
+			{
+				CHUNK_Y++;
+				Initialize_screen ();
+			}
+		}
+		SetPlayer
+
 		if (_kbhit ())
 		{
 			ch = getch();
 			switch (ch)
 			{
 				case 'q':
+					Save_world ();
 					endwin();
 					puts ("\e[0m\e[2J\e[?25h");
+					free (MATRIX);
 					return 0;
 					break;
 
 				case KEY_UP:
 					player = '^';
-					if (!MATRIX[GLOBAL_PY - 1][GLOBAL_PX])
+					if (!MATRIX[GLOBAL_PY - 1][GLOBAL_PX] && MATRIX[GLOBAL_PY + 1][GLOBAL_PX])
 					{
+						pause = COUNTER;
 						RemovePlayer
 						GLOBAL_PY--;
 						SCREEN_PY = GLOBAL_PY % LINES;
@@ -124,6 +142,7 @@ int main ()
 	Save_world ();
 	endwin();
 	puts ("\e[0m\e[2J\e[?25h");
+	free (MATRIX);
 	return 0;
 }
 
