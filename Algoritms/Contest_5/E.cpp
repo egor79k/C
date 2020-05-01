@@ -1,22 +1,19 @@
 #include <iostream>
-#include <climits>
 
 using namespace std;
 
 
-int n = 3;
-int cost[10][10] = {{8,1,6},
-					{3,5,7},
-					{4,9,2}};
-int dp[10][1 << 10] = {};
+int n = 0;
+int max_mask = 0;
+int **cost = 0;
+int **dp = 0;
 const int INF = 100000000;
-int asimpt = 0;
+
 
 bool bit (int mask, int pos)
 {
 	return (mask >> pos) & 1;
 }
-//__builtin_popcount (mask);
 
 
 int FindCheapest (int i, int mask)
@@ -24,9 +21,9 @@ int FindCheapest (int i, int mask)
 	if (dp[i][mask] != INF) return dp[i][mask];
 
 	for (int j = 0; j < n; ++j)
-	{asimpt++;
-		if (i != j && bit (mask, j))
-			dp[i][mask] = min (dp[i][mask], FindCheapest (j, mask - (1 << j)) + cost[i][j]);
+	{
+		if (bit (mask, j))
+			dp[i][mask] = min (dp[i][mask], FindCheapest (j, mask ^ (1 << j)) + cost[i][j]);
 	}
 
 	return dp[i][mask];
@@ -35,38 +32,19 @@ int FindCheapest (int i, int mask)
 
 void FindWay ()
 {
-	int solve[n] = {};
-	int count = 0;
-	int max_cost = 0;
 	int i = 0;
-	int mask = (1 << n) - 1;
-	//printf("0 ");
+	int mask = max_mask - 1;
 	while (mask != 0)
 	{
 		for (int j = 0; j < n; ++j)
 		{
-			if (bit (mask, j) && dp[i][mask - (1 << j)] + cost[i][j])
+			if (bit (mask, j) && dp[i][mask] == dp[j][mask ^ (1 << j)] + cost[i][j])
 			{
-				solve[count++] = j;
-				printf("%d ", j + 1);
+				if (j) printf("%d ", j);
 				i = j;
-				mask = mask - (1 << j);
+				mask = mask ^ (1 << j);
 			}
 		}
-	}
-	printf("\n");
-
-	for (i = 0; i < n; ++i)
-	{
-		printf("%d (%d) ", solve[i], cost[solve[i]][(i + 1) % n]);
-		if (cost[solve[i]][(i + 1) % n] > cost[solve[max_cost]][(max_cost + 1) % n]) max_cost = i;
-	}
-
-	printf("\nMAX_COST: %d\n\n", cost[solve[max_cost]][(max_cost + 1) % n]);
-
-	for (i = max_cost + 1; i <= max_cost + n; ++i)
-	{
-		printf("%d ", solve[i % n] + 1);
 	}
 	return;
 }
@@ -74,16 +52,27 @@ void FindWay ()
 
 int main ()
 {
+	int i = 0;
 	cin >> n;
+	n++;
+	max_mask = 1 << n;
 
-	for (int i = 0; i < n; ++i)
-		for (int j = 0; j < n; ++j) cin >> cost[i][j];
+	cost = (int **) calloc (n, sizeof (int *));
+	for (i = 0; i < n; ++i) cost[i] = (int *) calloc (n, sizeof (int));
+
+	dp = (int **) calloc (n, sizeof (int *));
+	for (i = 0; i < n; ++i) dp[i] = (int *) calloc (max_mask, sizeof (int));
+
+	for (i = 1; i < n; ++i)
+	{
+		for (int j = 1; j < n; ++j) cin >> cost[i][j];
+	}
 
 	int max_mask = 1 << n;
 
-	for (int i = 0; i < n; ++i)
+	for (i = 0; i < n; ++i)
 	{
-		for (int mask = 0; mask < max_mask; ++ mask)
+		for (int mask = 0; mask < max_mask; ++mask)
 		{
 			dp[i][mask] = INF;
 		}
@@ -91,17 +80,17 @@ int main ()
 
 	dp[0][0] = 0;
 
-	printf("\nAnswer: %d\n", FindCheapest (0, max_mask - 1));
-	printf("%d\n", asimpt);
+	printf("%d\n", FindCheapest (0, max_mask - 1));
+
+	for (i = 0; i < max_mask; ++i)
+	{
+		for (int j = 0; j < n; ++j)
+			printf ("%10d ", dp[j][i]);
+		printf("\n");
+	}
+	printf("\n");
+
 	FindWay ();
 
-/*	for (int i = 0; i < n; ++i)
-	{
-		for (int mask = 0; mask < max_mask; ++mask)
-		{
-			cout << dp[i][mask] << ' ';
-		}
-		cout << '\n';
-	}*/
 	return 0;
 }

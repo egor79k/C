@@ -1,7 +1,8 @@
 #include "Hash_table.cpp"
 
 const char *input_file = "input.txt";
-const int HT_SIZE = 811;
+const int HT_SIZE = 56087;
+const int WORDS_NUM = 562433;
 
 
 /**
@@ -88,7 +89,7 @@ void Find_in_HT (HT HshTb, char *buffer)
 {
 	int i = 0;
 	char *tmp = buffer;
-	while (i < 19783)
+	while (i < WORDS_NUM)
 	{
 		if (*buffer == '\0')
 		{

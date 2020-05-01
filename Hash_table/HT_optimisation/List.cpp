@@ -3,7 +3,7 @@
 #include <string.h>
 
 
-#define DEBUG 0
+//#define DEBUG 0
 
 #ifdef DEBUG
 	#define ON_DEBUG(code) code

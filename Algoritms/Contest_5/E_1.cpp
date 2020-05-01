@@ -40,23 +40,12 @@ int main()
 	for (i = 0; i < max_mask; ++i)
 	{
 		for (j = 0; j < n; ++j)
-			cout << dp[i][j] << ' ';
-		cout << '\n';
+			printf ("%10d ", dp[i][j]);
+		printf("\n");
 	}
 	i = 0;
 	int mask = max_mask - 1;
-	/*while (mask != 0)
-	{
-		printf("OK\n");
-		for (j = 0; j < n; ++j)
-			if (bit (j, mask) && dp[mask][i] == dp[mask - (1 << j)][j] + cost[j][i])
-			{
-				printf("%d ", j);
-				i = j;
-				mask = mask - (1 << j);
-			}
-	}*/
-			printf("\n");
+	printf("\n");
 
 
 	ans = inf;
