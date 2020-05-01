@@ -1,96 +1,106 @@
 #include <iostream>
+#include <vector>
+#include <climits>
 
 using namespace std;
 
-
-int n = 0;
-int max_mask = 0;
-int **cost = 0;
-int **dp = 0;
-const int INF = 100000000;
+const int MAX_COST = 2000000000;
 
 
-bool bit (int mask, int pos)
+int builtin_popcount (int mask)						// Number of 1 in binary value
 {
-	return (mask >> pos) & 1;
+	int num = 0;
+	while (mask)
+	{
+		mask &= (mask - 1);
+		num++;
+	} 
+	return num;
 }
 
 
-int FindCheapest (int i, int mask)
+bool bit (int pos, int mask)						// Is bit 1 in mask on pos position
 {
-	if (dp[i][mask] != INF) return dp[i][mask];
-
-	for (int j = 0; j < n; ++j)
-	{
-		if (bit (mask, j))
-			dp[i][mask] = min (dp[i][mask], FindCheapest (j, mask ^ (1 << j)) + cost[i][j]);
-	}
-
-	return dp[i][mask];
-}
-
-
-void FindWay ()
-{
-	int i = 0;
-	int mask = max_mask - 1;
-	while (mask != 0)
-	{
-		for (int j = 0; j < n; ++j)
-		{
-			if (bit (mask, j) && dp[i][mask] == dp[j][mask ^ (1 << j)] + cost[i][j])
-			{
-				if (j) printf("%d ", j);
-				i = j;
-				mask = mask ^ (1 << j);
-			}
-		}
-	}
-	return;
+	return ((mask >> pos) & 1);
 }
 
 
 int main ()
 {
+	ios::sync_with_stdio (0);
+	cin.tie (0);
+
+	int answer = INT_MAX;
+	int min_ind = 0;
 	int i = 0;
+	int j = 0;
+	int n = 0;
+
 	cin >> n;
-	n++;
-	max_mask = 1 << n;
 
-	cost = (int **) calloc (n, sizeof (int *));
-	for (i = 0; i < n; ++i) cost[i] = (int *) calloc (n, sizeof (int));
+	const int max_mask = 1 << n;
+	int cost[n][n] = {};
 
-	dp = (int **) calloc (n, sizeof (int *));
-	for (i = 0; i < n; ++i) dp[i] = (int *) calloc (max_mask, sizeof (int));
+	std::vector<std::vector<int>> dp (max_mask, std::vector<int> (n, MAX_COST));
+	
+	for (i = 0; i < n; ++i) dp[0][i] = 0;
+	
+	for (i = 0; i < n; ++i)							// Costs initialization
+		for (int j = 0; j < n; ++j)
+			cin >> cost[i][j];
+	
 
-	for (i = 1; i < n; ++i)
+	
+	for (int mask = 0; mask < max_mask; ++mask)		// DP counting
 	{
-		for (int j = 1; j < n; ++j) cin >> cost[i][j];
-	}
-
-	int max_mask = 1 << n;
-
-	for (i = 0; i < n; ++i)
-	{
-		for (int mask = 0; mask < max_mask; ++mask)
+		for (i = 0; i < n; ++i)
 		{
-			dp[i][mask] = INF;
+			for (j = 0; j < n; ++j)
+			{
+				if (bit (i, mask))
+				{
+					if (builtin_popcount (mask) == 1) dp[mask][i] = 0;
+					else dp[mask][i] = min (dp[mask][i], dp[mask ^ (1 << i)][j] + cost[j][i]);
+				}
+			}
 		}
 	}
 
-	dp[0][0] = 0;
 
-	printf("%d\n", FindCheapest (0, max_mask - 1));
-
-	for (i = 0; i < max_mask; ++i)
+	for (i = 0; i < n; ++i)							// Cheapest path length counting
 	{
-		for (int j = 0; j < n; ++j)
-			printf ("%10d ", dp[j][i]);
-		printf("\n");
+		if (answer > dp[max_mask - 1][i])
+		{
+			answer = dp[max_mask - 1][i];
+			min_ind = i;
+		}
 	}
-	printf("\n");
 
-	FindWay ();
+	printf("%d\n", answer);
+	
+
+	int mask = max_mask - 1;
+	int k = 0;
+	int cheapest_path[n] = {};
+	cheapest_path[k++] = min_ind;
+	int count = n - 1;
+	i = min_ind;
+	
+	while (count)									// Cheapest path finding
+	{
+		for (j = 0; j < n; ++j)
+		{
+			if (bit (j, mask) && dp[mask][i] == dp[mask ^ (1 << i)][j] + cost[j][i])
+			{
+				cheapest_path[k++] = j;
+				mask ^= (1 << i);
+				i = j;
+				count--;
+			}
+		}
+	}
+	
+	for (i = n - 1; i >= 0; --i) printf("%d ", cheapest_path[i] + 1);
 
 	return 0;
 }
