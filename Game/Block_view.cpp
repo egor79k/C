@@ -10,12 +10,12 @@ void Print_CT (int color_0, int back_0)
 		{
 			for (int back = back_0; back < 100; back += 60)
 			{
-				printf("\t\e[%d;%d;%dm\U00002591\U00002591", type, color, back);
-				printf("\U00002592\U00002592");
-				printf("\U00002593\U00002593");
-				printf("\U00002588\U00002588\e[0m");
+				printf ("\t\e[%d;%d;%dm\U00002591\U00002591", type, color, back);
+				printf ("\U00002592\U00002592");
+				printf ("\U00002593\U00002593");
+				printf ("\U00002588\U00002588\e[0m");
 
-				printf(" \\e[%d;%d;%dm \\U00002591 \\U00002592 \\U00002593 \\U00002588", type, color, back);
+				printf (" \\e[%d;%d;%dm \\U00002591 \\U00002592 \\U00002593 \\U00002588", type, color, back);
 			}
 			putchar ('\n');
 		}
@@ -27,7 +27,7 @@ int main ()
 {
 	for (int i = 0; i < 8; ++i)
 	{
-		for (int j = 0; j < 8; ++j)
+		for (int j = i; j < 8; ++j)
 		{
 			if (j != i)
 			{
