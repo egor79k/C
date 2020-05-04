@@ -23,7 +23,6 @@ void Print_CT (int color_0, int back_0)
 			putchar ('\n');
 		}
 	}
-	putchar ('\n');
 }
 
 
@@ -35,7 +34,9 @@ int main ()
 		{
 			if (j != i)
 			{
+				printf(" \e[%dm\U00002588\e[0m + \e[%dm \e[0m\n", 30 + i, 40 + j);
 				Print_CT (30 + i, 40 + j);
+				printf(" \e[%dm\U00002588\e[0m + \e[%dm \e[0m\n", 30 + j, 40 + i);
 				Print_CT (30 + j, 40 + i);
 			}
 		}
