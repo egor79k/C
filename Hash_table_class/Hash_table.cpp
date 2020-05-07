@@ -4,19 +4,19 @@
 #include "List.cpp"
 
 
-int Hash_std (char *string);
+unsigned int Hash_std (char *string);
 
 
 class HT
 {
 private:
-	static const int HT_SIZE = 811;
+	static const unsigned int HT_SIZE = 811;
 	List Hash_table[HT_SIZE] = {};
-	int (*Hash) (char *);
+	unsigned int (*Hash) (char *);
 
 
 public:
-	HT (int (*Hash_func) (char *) = Hash_std);
+	HT (unsigned int (*Hash_func) (char *) = Hash_std);
 	~HT () {}
 
 	void Insert (char *string);
@@ -33,10 +33,10 @@ public:
 *
 *	return String hash
 */
-int Hash_std (char *string)
+unsigned int Hash_std (char *string)
 {
 	const int HXV = 1111111111;
-	int hash = 0;
+	unsigned int hash = 0;
 	while (*string != '\0')
 	{
 		hash += *string;
@@ -52,7 +52,7 @@ int Hash_std (char *string)
 *
 *	@param[in] Hash_func Hash function pointer
 */
-HT::HT (int (*Hash_func) (char *))
+HT::HT (unsigned int (*Hash_func) (char *))
 {
 	Hash = Hash_func;
 }
@@ -65,7 +65,7 @@ HT::HT (int (*Hash_func) (char *))
 */
 void HT::Insert (char *string)
 {
-	int hash = Hash (string) % HT_SIZE;
+	unsigned int hash = Hash (string) % HT_SIZE;
 	Hash_table[hash].InsertAfter (Hash_table[hash].End (), string);
 	return;
 }
@@ -93,7 +93,7 @@ bool HT::Delete (char *string)
 */
 char *HT::Find (char *string)
 {
-	int hash = Hash (string) % HT_SIZE;
+	unsigned int hash = Hash (string) % HT_SIZE;
 	return Hash_table[hash].Find (string);
 }
 
