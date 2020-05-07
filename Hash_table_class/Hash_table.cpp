@@ -10,14 +10,16 @@ unsigned int Hash_std (char *string);
 class HT
 {
 private:
-	static const unsigned int HT_SIZE = 811;
-	List Hash_table[HT_SIZE] = {};
+	//static const unsigned int size = 811;
+	//List Hash_table[size] = {};
+	unsigned int size = 0;
+	List *Hash_table = 0;
 	unsigned int (*Hash) (char *);
 
 
 public:
-	HT (unsigned int (*Hash_func) (char *) = Hash_std);
-	~HT () {}
+	HT (int ht_size, unsigned int (*Hash_func) (char *) = Hash_std);
+	~HT ();
 
 	void Insert (char *string);
 	bool Delete (char *string);
@@ -52,9 +54,22 @@ unsigned int Hash_std (char *string)
 *
 *	@param[in] Hash_func Hash function pointer
 */
-HT::HT (unsigned int (*Hash_func) (char *))
+HT::HT (int ht_size, unsigned int (*Hash_func) (char *))
 {
 	Hash = Hash_func;
+	size = ht_size;
+	Hash_table = new List[size];
+}
+
+
+/**
+*	Hash table destructor
+*
+*	@param[in] Hash_func Hash function pointer
+*/
+HT::~HT ()
+{
+	delete[] Hash_table;
 }
 
 
@@ -65,7 +80,7 @@ HT::HT (unsigned int (*Hash_func) (char *))
 */
 void HT::Insert (char *string)
 {
-	unsigned int hash = Hash (string) % HT_SIZE;
+	unsigned int hash = Hash (string) % size;
 	Hash_table[hash].InsertAfter (Hash_table[hash].End (), string);
 	return;
 }
@@ -80,7 +95,7 @@ void HT::Insert (char *string)
 */
 bool HT::Delete (char *string)
 {
-	return Hash_table[Hash (string) % HT_SIZE].Delete (string);
+	return Hash_table[Hash (string) % size].Delete (string);
 }
 
 
@@ -93,7 +108,7 @@ bool HT::Delete (char *string)
 */
 char *HT::Find (char *string)
 {
-	unsigned int hash = Hash (string) % HT_SIZE;
+	unsigned int hash = Hash (string) % size;
 	return Hash_table[hash].Find (string);
 }
 
@@ -106,7 +121,7 @@ char *HT::Find (char *string)
 void HT::Print_lists_length (const char *file_name)
 {
 	FILE *output = fopen (file_name, "a");
-	for (int i = 0; i < HT_SIZE; ++i)
+	for (int i = 0; i < size; ++i)
 	{
 		fprintf(output, "%d;", Hash_table[i].End ());
 	}

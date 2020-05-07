@@ -2,7 +2,7 @@
 
 const char *input_file = "input.txt";
 const int HT_SIZE = 380041;//56087;
-const int WORDS_NUM = 1152320;//828725;//562433;
+const int WORDS_NUM = 1278241;//1152320;//828725;//562433;
 
 
 
@@ -137,8 +137,9 @@ int main ()
 	char *buff_start = buffer;
 
 	Fill_HT (HshTb, buffer);
-	for (int i = 0; i < 100; ++i)
-		Find_in_HT (HshTb, buff_start);
+	HshTb.Print_lists_length ("stat.csv");
+	//for (int i = 0; i < 1000; ++i)
+	//	Find_in_HT (HshTb, buff_start);
 /*
 	HshTb.Insert ("cheRB");
 	printf("\n%s\n", HshTb.Find ("cheRB"));
