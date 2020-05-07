@@ -103,7 +103,7 @@ void Find_in_HT (HT &HshTb, char *buffer)
 		}
 		buffer++;
 	}
-	printf("%d\n", count);
+	//printf("%d ", count);
 	return;
 }
 
