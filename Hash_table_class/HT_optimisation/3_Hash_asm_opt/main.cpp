@@ -140,6 +140,12 @@ unsigned int MurmurHash (char *string)
 }
 
 
+unsigned int crc32 (char *string)
+{
+	
+}
+
+
 char *GetBuffer (const char *file_name)
 {
 	FILE *in = fopen (file_name, "r");
