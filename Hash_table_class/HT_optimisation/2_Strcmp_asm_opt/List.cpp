@@ -233,20 +233,7 @@ char *List::Find (char *value)
 
 		i = next[i];
 	}
-/*
-	int i = 0;
-	int j = 0;
 
-	for (i = head; i != 0; i = next[i])
-	{
-		j = 0;
-		while (data[i][j] != '\0' && value[j] != '\0' && data[i][j] == value[j]) j++;
-		if (data[i][j] == '\0' && value[j] == '\0') return data[i];
-		//if (!strcmp(data[i], value)) break;
-	}
-
-	//if (i >= 0) return data[i];
-*/
 	return NULL;
 }
 

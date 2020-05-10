@@ -16,7 +16,7 @@ class List
 {
 private:
 	const int RESIZE_VALUE = 2;
-	const int HYSTERESIS   = 2;
+	const int HYSTERESIS		 = 2;
 	const int START_LIST_SIZE = 2;
 
 	char **data = {};
@@ -203,28 +203,56 @@ char *List::Find (char *value)
 	{
 		int not_equal = 0;
 
+		asm (".intel_syntax noprefix						\n"
+			"	mov rax, rcx								\n"
+			"	sub rax, rdx								\n"
+			"	sub rdx, 16									\n"
+
+			".loop:											\n"
+			"	add rdx, 16									\n"
+			"	movdqu xmm0, xmmword ptr[rdx]				\n"
+			"	pcmpistri xmm0, xmmword ptr[rdx + rax], 24	\n" // 24 = 011000b
+			"	ja .loop									\n"
+			"	jc .not_equal								\n"
+
+			"	xor rax, rax								\n"
+			"	jmp .end 									\n"
+
+			".not_equal:									\n"
+			"	mov rax, 1									\n"
+
+			"	.end:										\n"
+			"	.att_syntax prefix							\n"
+
+			: "=a" (not_equal)
+			: "c" (data[i]), "d" (value)
+			: "xmm0"
+			);
+
+/*
 		asm (".intel_syntax noprefix\n"
-			"	xor rax, rax\n"
-			"	mov bl, 0\n"
-			"	cld\n"
+			"	xor rax, rax		\n"
+			"	mov bl, 0			\n"
+			"	cld					\n"
 
-			".compare:\n"
-			"	cmpsb\n"
-			"	jne .endcmp\n"
-			"	dec rsi\n"
-			"	lodsb\n"
-			"	cmp bl, al\n"
-			"	jne .compare\n"
+			".compare:				\n"
+			"	cmpsb				\n"
+			"	jne .endcmp			\n"
+			"	dec rsi 			\n"
+			"	lodsb				\n"
+			"	cmp bl, al			\n"
+			"	jne .compare		\n"
 
-			".endcmp:\n"
-			"	mov al, [rdi - 1]\n"
-			"	sub al, [rsi - 1]\n"
-			".att_syntax prefix\n"
+			".endcmp:				\n"
+			"	mov al, [rdi - 1]	\n"
+			"	sub al, [rsi - 1]	\n"
+			".att_syntax prefix		\n"
 			
 			: "=a"(not_equal)
 			: "D"(value), "S"(data[i])
 			: "rbx"
 			);
+*/
 
 		if (!not_equal)
 		{
@@ -233,20 +261,7 @@ char *List::Find (char *value)
 
 		i = next[i];
 	}
-/*
-	int i = 0;
-	int j = 0;
 
-	for (i = head; i != 0; i = next[i])
-	{
-		j = 0;
-		while (data[i][j] != '\0' && value[j] != '\0' && data[i][j] == value[j]) j++;
-		if (data[i][j] == '\0' && value[j] == '\0') return data[i];
-		//if (!strcmp(data[i], value)) break;
-	}
-
-	//if (i >= 0) return data[i];
-*/
 	return NULL;
 }
 
