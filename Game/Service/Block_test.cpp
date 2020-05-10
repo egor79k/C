@@ -21,6 +21,10 @@
 
 //Limestone: "\e[37;40m\U00002588"
 
+#define DIRT_D "\e[30;43m\U00002593"
+#define DIRT_L "\e[2;33;40m\U00002592"
+#define DIRT_W "\e[33;40m\U00002591"
+#define DIRT_S "\e[2;93;40m\U00002591"
 
 int main ()
 {
