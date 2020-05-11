@@ -25,40 +25,35 @@ unsigned int MurmurHash (char *string)
 
 	//	"	mov     rsi,[lpData]\n"
 	//	"	mov     ebx,[dSize]\n"
+// ebx == k
+// ecx == len
+// esi == string
+// eax == hash
+
+		"	mov		r8b, ecx			\n"	// unsigned int len = l;
+		"	mov		eax, 42764812		\n"	// unsigned int h = MUR_SEED;
+		"	xor		ebx, ebx			\n"	// unsigned int k = 0;
  
-		"	mov     ecx, 47264812\n"
-		"	xor     ecx, ebx\n"
- 
-		".loc_loop:		\n"
-		"	cmp     ebx, 4\n"
+		".loc_loop:						\n"	// while (len >= 4)
+		"	cmp     ecx, 4\n"
 		"	jb      .stop\n"
+
+		"	mov		edx, dword [rsi]	\n"	// k = *(unsigned int*)string;
+		"	imul	ebx, edx			\n"
+
+		"	imul    ebx, 0x5BD1E995 	\n" // mmix (h, k);
+		"	mov     edx, ebx			\n"
+		"	shr     edx, 24				\n"
+		"	xor     ebx, edx			\n"
+		"	imul    ebx, 0x5BD1E995 	\n"
+
+		"	add     rsi, 4				\n"	// string += 4;
+		"	sub     ecx, 4				\n"	// len -= 4;
+		"	jmp     .loc_loop			\n"
  
-		"	imul    ecx, 0x5BD1E995\n"
- 
-		"	mov     edx, byte [rsi+1]\n"
-		"	mov     eax, byte [rsi]\n"
-		"	shl     edx, 8\n"
-		"	or      eax, edx\n"
-		"	mov     edx, byte [rsi+2]\n"
-		"	shl     edx, 16\n"
-		"	or      eax, edx\n"
-		"	mov     edx, byte [rsi+3]\n"
-		"	shl     edx, 24\n"
-		"	or      eax, edx\n"
- 
-		"	imul    eax, 0x5BD1E995\n"
-		"	mov     edx, eax\n"
-		"	shr     edx, 24\n"
-		"	xor     eax, edx\n"
-		"	imul    eax, 0x5BD1E995\n"
- 
-		"	xor     ecx, eax\n"
- 
-		"	add     rsi, 4\n"
-		"	sub     ebx, 4\n"
-		"	jmp     .loc_loop\n"
- 
-		".stop:	\n"
+		".stop:							\n"
+
+		"	xor		ebx, ebx			\n"	// unsigned int t = 0;
 
 		"	cmp     ebx, 3\n"
 		"	jne     .loc_tail_2\n"
@@ -92,7 +87,7 @@ unsigned int MurmurHash (char *string)
 		".att_syntax prefix\n"
  
  		: "=a" (hash)
- 		: "S" (string), "b" (strlen (string))
+ 		: "S" (string), "c" (strlen (string))
 		: "rcx", "rdx", "rdi"
 		);
 
