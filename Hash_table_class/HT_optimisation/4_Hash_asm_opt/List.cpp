@@ -203,7 +203,7 @@ char *List::Find (char *value)
 	{
 		int not_equal = 0;
 
-		asm (".intel_syntax noprefix						\n"
+		asm volatile (".intel_syntax noprefix						\n"
 			"	mov rax, rcx								\n"
 			"	sub rax, rdx								\n"
 			"	sub rdx, 16									\n"
