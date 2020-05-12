@@ -8,7 +8,7 @@ const int WORDS_NUM = 1271839;//1152320;//828725;//562433;
 
 
 /**
-*	MurMurHash v.2A
+*	MurMurHash v.2A inline assembler optimisation
 *
 *	@param[in] string String pointer
 *
@@ -109,6 +109,13 @@ unsigned int MurmurHash (char *string)
 }
 
 
+/**
+*	MurMurHash v.2A inline assembler optimisation
+*
+*	@param[in] string String pointer
+*
+*	return String hash
+*/
 #define mmix(h,k) { k *= m; k ^= k >> r; k *= m; h *= m; h ^= k; }
 const unsigned int MUR_SEED = 42764812;
 
@@ -174,8 +181,6 @@ void Fill_HT (HT &HshTb, char *buffer)
 		if (*buffer == '\n')
 		{
 			count++;
-			//printf("%d\n", count);
-			//fflush (stdout);
 			*buffer = '\0';
 			HshTb.Insert (tmp);
 			tmp = buffer + 1;
@@ -195,31 +200,24 @@ void Find_in_HT (HT &HshTb, char *buffer)
 	{
 		if (*buffer == '\0')
 		{
-			//printf("finding %s...\n", tmp);
-			//fflush (stdout);
-			//printf("%s\n", HshTb.Find (tmp));
-			//fflush (stdout);
 			HshTb.Find (tmp);
 			tmp = buffer + 1;
 			count++;
 		}
 		buffer++;
 	}
-	//printf("%d ", count);
+
 	return;
 }
 
 
 int main ()
 {
-
 	int count = 0;
 	HT HshTb (HT_SIZE, MurmurHash);
 
 	char *buffer = GetBuffer (input_file);			//Filling HT with words from input file
 	Fill_HT (HshTb, buffer);
-
-	//HshTb.Print_lists_length ("stat.csv");
 
 	char *find_buff = GetBuffer (input_find_file);	//Reading find buffer from file
 	char *find_buff_start = find_buff;
@@ -235,10 +233,7 @@ int main ()
 	}
 
 	for (int i = 0; i < 200; ++i)					//Finding words in HT
-	{
 		Find_in_HT (HshTb, find_buff_start);
-		//printf("%d ", i);
-	}
 
 
 	free (buffer);
