@@ -25,6 +25,10 @@ Change standard strcmp() function on inline assembler code. Reduced time for Fin
 -------------------------
 Optimize Find function with inline SSE compare instructions. Current time is around 22 seconds.
 
+![Image alt](https://github.com/egor79k/programms/blob/master/Images/3_Strcmp_opt.png "SSE optimization")
+
+![Image alt](https://github.com/egor79k/programms/blob/master/Images/3_Strcmp_func_1.png "SSE optimization")
+
 |Optimization|Time (sec.)|
 |:----------:|:---------:|
 |ASM|26,4|
