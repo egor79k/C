@@ -1,5 +1,5 @@
 HASH TABLE OPTIMIZATION
 =======================
-1. Standart
+h1 Standart
 ---------------
 The original version of Hash Table without any optimizations.
