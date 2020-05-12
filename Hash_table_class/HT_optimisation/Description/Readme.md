@@ -2,7 +2,7 @@ HASH TABLE OPTIMIZATION
 =======================
 1.Standart
 ----------
-The original version of Hash Table without any optimizations.
+The original version of Hash Table.
 
 ![Image alt](https://github.com/egor79k/programms/blob/master/Images/1_Standart.png "Standart")
 ![Image alt](https://github.com/egor79k/programms/blob/master/Images/1_Standart_diag.png "Standart diagramm")
@@ -20,3 +20,12 @@ Change standard strcmp() function on inline assembler code. Reduced time for Fin
 ![Image alt](https://github.com/egor79k/programms/blob/master/Images/2_Strcmp_opt.png "Asm optimization")
 
 ![Image alt](https://github.com/egor79k/programms/blob/master/Images/2_Strcmp_func_1.png "Asm optimization")
+
+3.Strcmp SSE optimization
+-------------------------
+Optimize Find function with inline SSE compare instructions. Current time is around 22 seconds.
+
+|Optimization|Time (sec.)|
+|:----------:|:---------:|
+|ASM|26,4|
+|+SSE|22,4|
