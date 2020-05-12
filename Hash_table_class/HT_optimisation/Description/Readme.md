@@ -36,10 +36,10 @@ Optimize Find function with inline SSE compare instructions. Current time is aro
 
 4.Hash asm optimization
 -----------------------
-Optimize MurMurHash v.2A function with inline assembler. Full time is around 18 seconds now. -O optimizations don’t give speed up here. MurMur is in the “green zone” at present.
+Optimize MurMurHash v.2A function with inline assembler. Full time is around 18 seconds now. MurMur is in the “green zone” at present.
 
 ```c++
-    //===============================
+   		//===============================
 		// Input: RSI - 1-st string
 		//        RCX - string length
 		// Outpt: RAX - hash
