@@ -203,15 +203,23 @@ char *List::Find (char *value)
 	{
 		int not_equal = 0;
 
+		//===============================
+		// Input: RDI - 1-st string
+		//        RSI - 2-nd string
+		// Outpt: RAX - 0 - equal
+		//              else - not equal
+		// Destr: XMM0
+		//===============================
+
 		asm (".intel_syntax noprefix						\n"
-			"	mov rax, rcx								\n"
-			"	sub rax, rdx								\n"
-			"	sub rdx, 16									\n"
+			"	mov rax, rsi								\n"
+			"	sub rax, rdi								\n"
+			"	sub rdi, 16									\n"
 
 			".loop:											\n"
-			"	add rdx, 16									\n"
-			"	movdqu xmm0, xmmword ptr[rdx]				\n"
-			"	pcmpistri xmm0, xmmword ptr[rdx + rax], 24	\n" // 24 = 011000b
+			"	add rdi, 16									\n"
+			"	movdqu xmm0, xmmword ptr[rdi]				\n"
+			"	pcmpistri xmm0, xmmword ptr[rdi + rax], 24	\n" // 24 = 011000b
 			"	ja .loop									\n"
 			"	jc .not_equal								\n"
 
@@ -225,7 +233,7 @@ char *List::Find (char *value)
 			"	.att_syntax prefix							\n"
 
 			: "=a" (not_equal)
-			: "c" (data[i]), "d" (value)
+			: "S" (data[i]), "D" (value)
 			: "xmm0"
 			);
 

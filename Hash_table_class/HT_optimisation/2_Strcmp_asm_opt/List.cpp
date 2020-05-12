@@ -203,24 +203,30 @@ char *List::Find (char *value)
 	{
 		int not_equal = 0;
 
+		//===============================
+		// Input: RDI - 1-st string
+		//        RSI - 2-nd string
+		// Outpt: RAX - 0 - equal
+		//              else - not equal
+		// Destr: RBX
+		//===============================
+
 		asm (".intel_syntax noprefix\n"
-			"	xor rax, rax\n"
-			"	mov bl, 0\n"
-			"	cld\n"
+			"	xor rax, rax		\n"
+			"	mov bl, 0			\n"
+			"	cld					\n"
 
-			".compare:\n"
-			"	cmpsb\n"
-			"	jne .endcmp\n"
-			"	dec rsi\n"
-			"	lodsb\n"
-			"	cmp bl, al\n"
-			"	jne .compare\n"
+			".compare:				\n"
+			"	cmpsb				\n"
+			"	jne .endcmp			\n"
+			"	cmp bl, [rsi - 1]	\n"
+			"	jne .compare		\n"
 
-			".endcmp:\n"
-			"	mov al, [rdi - 1]\n"
-			"	sub al, [rsi - 1]\n"
-			".att_syntax prefix\n"
-			
+			".endcmp:				\n"
+			"	mov al, [rdi - 1]	\n"
+			"	sub al, [rsi - 1]	\n"
+			".att_syntax prefix		\n"
+
 			: "=a"(not_equal)
 			: "D"(value), "S"(data[i])
 			: "rbx"

@@ -18,6 +18,13 @@ unsigned int MurmurHash (char *string)
 {
 	unsigned int hash = 0;
 
+		//===============================
+		// Input: RSI - 1-st string
+		//        RCX - string length
+		// Outpt: RAX - hash
+		// Destr: RBX RDX RDI
+		//===============================
+
 		asm (".intel_syntax noprefix			\n"
 
 			"	mov		edi, ecx				\n"	// unsigned int len = l;
