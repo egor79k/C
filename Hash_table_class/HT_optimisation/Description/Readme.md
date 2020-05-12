@@ -13,6 +13,7 @@ The original version of Hash Table.
 |-O1|24,2|
 |-O3|16,9|
 
+
 2.Strcmp ASM optimization
 -------------------------
 Change standard strcmp() function on inline assembler code. Reduced time for Find by 4%. We have around 26,4 seconds now.
@@ -20,6 +21,7 @@ Change standard strcmp() function on inline assembler code. Reduced time for Fin
 ![Image alt](https://github.com/egor79k/programms/blob/master/Images/2_Strcmp_opt.png "Asm optimization")
 
 ![Image alt](https://github.com/egor79k/programms/blob/master/Images/2_Strcmp_func_1.png "Asm optimization")
+
 
 3.Strcmp SSE optimization
 -------------------------
@@ -33,6 +35,7 @@ Optimize Find function with inline SSE compare instructions. Current time is aro
 |:----------:|:---------:|
 |ASM|26,4|
 |+SSE|22,4|
+
 
 4.Hash asm optimization
 -----------------------
@@ -135,6 +138,7 @@ Optimize MurMurHash v.2A function with inline assembler. Full time is around 18 
 ```
 ![Image alt](https://github.com/egor79k/programms/blob/master/Images/4_MurMur_opt.png "Asm optimization")
 
+
 5.Result statistics
 -------------------
 |Optimization|Time (sec.)|Coefficient|
@@ -145,6 +149,5 @@ Optimize MurMurHash v.2A function with inline assembler. Full time is around 18 
 |STRCMP ASM|26,4|1,14|
 |STRCMP SSE|22,4|1,34|
 |HASH ASM|18|1,67|
-
 
 ![Image alt](https://github.com/egor79k/programms/blob/master/Images/5_Diag.png "SSE optimization")
