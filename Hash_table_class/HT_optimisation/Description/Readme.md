@@ -3,4 +3,4 @@ HASH TABLE OPTIMIZATION
 1.Standart
 ---------------
 The original version of Hash Table without any optimizations.
-![Image alt](Hash_table_class/HT_optimisation/Description/1_Standart.png "Standart")
+![Image alt](1_Standart.png "Standart")
