@@ -114,6 +114,28 @@ unsigned int Jerkins (char *string)
 
 
 /**
+*	FNV hash function v.1a
+*
+*	@param[in] string String pointer
+*
+*	return String hash
+*/
+unsigned int FNV (char *string)
+{
+	const unsigned int FNV_32_PRIME = 0x01000193;
+	unsigned int hash = 0x811c9dc5;
+
+	while (*string)
+	{
+		hash ^= *string++;
+		hash *= FNV_32_PRIME;
+	}
+
+	return hash;
+}
+
+
+/**
 *	MurMurHash v.2A
 *
 *	@param[in] string String pointer
@@ -215,6 +237,8 @@ int main ()
 	Fill_and_print_HT (Cycle_hash);
 
 	Fill_and_print_HT (Jerkins);
+
+	Fill_and_print_HT (FNV);
 
 	Fill_and_print_HT (MurmurHash);
 	
