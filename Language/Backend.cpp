@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "Asm_commands.h"
 
 #define BKND_ERROR "\e[1;35mBackend: \e[31merror:\e[0m"
 
@@ -218,6 +219,7 @@ void WriteAsm (tree *node, FILE *output)
 void BackEnd (tree *root, const char file_name[MAX_FILE_NAME])
 {
 	FILE *output = fopen (file_name, "w");
+	//fprintf(output, "\n\nEND_\n");
 	WriteAsm (root, output);
 	fprintf(output, "\n\nEND_\n");
 }
