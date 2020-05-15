@@ -1,0 +1,10 @@
+				  Variabilis nulla assignare 0
+				  Variabilis unus assignare 1
+
+                Definire Factorial bona val num:
+Primum: si num est nulla
+    Primum: reditum unus!, si num minus nulla
+    Primum: reditum nulla!, reditum num productum Factorial bona num subtrahere unus:!
+    
+                Definire Principalis bona:
+Primum: Variabilis num assignare nulla, lego num, reditum Factorial bona num:!

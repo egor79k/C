@@ -57,6 +57,13 @@ int main ()
 
 	INPUT_FILE_NAME = argv[1];
 	buffer = GetBuffer (argv[1]);
+
+	if (buffer == NULL)
+	{
+		printf("%s Wrong input file.\n", TRNS_ERROR);
+		return 1;
+	}
+
 	output = fopen (argv[2], "w");
 	printf("|Operating...\n");
 	GetD ();

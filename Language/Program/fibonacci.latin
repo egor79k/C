@@ -1,0 +1,11 @@
+				Variabilis nulla assignare 0
+				Variabilis unus assignare 1
+
+			Definire Fibonacci bona Variabilis num:
+Primum: si num minus nulla
+Primum: reditum num!, si num est nulla
+Primum: reditum nulla!, si num est unus
+Primum: reditum unus!, reditum Fibonacci bona num subtrahere unus: adde Fibonacci bona num subtrahere 2:!
+
+			Definire Principalis bona:
+Primum: Variabilis num assignare nulla, lego num, reditum Fibonacci bona num:!
