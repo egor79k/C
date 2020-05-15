@@ -7,6 +7,7 @@
 //			-f 					-only frontending
 //			-b 					-only frontending and backending
 //			-n 					-only frontending, backending and nasm
+//			-t 					-draw frontend tree
 //			-s 					-save all intermediary files
 //			-c 					-quote M.Cicero
 //::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -29,6 +30,7 @@ const int MAX_FILE_NAME_LENGHT = 50;
 const char *F_input_file_type = ".latin";
 const char *F_B_file_type     = ".txt";
 const char *B_N_file_type     = ".asm";
+const char *Tree_file_type     = ".svg";
 const char *L_input_file_type = ".o";
 const char *L_name_flag       = " -o ";
 const char *HELP_FLAG         = "-h";
@@ -37,6 +39,7 @@ bool SAVE_INTER_FILES = false;
 bool ONLY_F           = false;
 bool ONLY_F_B         = false;
 bool ONLY_F_B_N       = false;
+bool DRAW_TREE        = false;
 
 
 void Help ()
@@ -47,6 +50,7 @@ void Help ()
 	printf ("-f  only frontending\n");
 	printf ("-b  only frontending and backending\n");
 	printf ("-n  only frontending, backending and nasm\n");
+	printf ("-t  draw frontend tree\n");
 	printf ("-s  save all intermediary files\n");
 	printf ("-c  quote M.Cicero (NOT SUPPORTED YET)\n\n");
 	return;
@@ -147,6 +151,14 @@ int main (int argc, char ** argv)
 					SAVE_INTER_FILES = true;
 					break;
 
+				case 't':
+					DRAW_TREE = true;
+					strcpy (&argv[1][type_index], Tree_file_type);
+					strcpy (&F_call[strlen (F_call)], folder_name);
+					strcpy (&F_call[strlen (F_call)], &argv[1][file_name_index]);
+					SAVE_INTER_FILES = true;
+					break;
+
 				default:
 					printf("%s unlnown flag: \"\e[31m%s\e[0m\"\n", ERROR, argv[arg_num]);
 					return 1;
@@ -168,7 +180,8 @@ int main (int argc, char ** argv)
 	system (F_call);
 
 	if (!ONLY_F)
-	{printf("folder %s\n", folder_name);
+	{
+		if (DRAW_TREE) strcpy (&argv[1][type_index], F_B_file_type);
 		strcpy (&B_call[10], folder_name);
 		strcpy (&B_call[strlen (B_call)], &argv[1][file_name_index]);
 

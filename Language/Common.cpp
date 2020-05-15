@@ -3,7 +3,7 @@ const int MAX_FUNC_NUM = 20;
 const int MAX_VAR_NAME_LENGTH = 16;
 const int MAX_FUNC_HASH_MULTIPLIER = 32768; //= 2^15   16 symbols max
 
-char *str = "";
+char *str = 0;
 
 double ReadId (const char mode = 'N');
 
@@ -115,7 +115,7 @@ void WriteConnections (tree *node, FILE *out)
 }
 
 
-void Dump (tree *root, char svg_file[MAX_FILE_NAME], const char mode)
+void Dump (tree *root, const char svg_file[MAX_FILE_NAME], const char mode)
 {
 	tree *node = root;
 	FILE *out = fopen ("tree.dot", "w");
@@ -295,9 +295,10 @@ tree *ReadNode ()
 }
 
 
-tree *ReadTree (char file_name[MAX_FILE_NAME])
+tree *ReadTree (const char file_name[MAX_FILE_NAME])
 {
 	str = GetBuffer (file_name);
+	if (str == NULL) return NULL;
 	str++;
 	tree *root = ReadNode ();
 	return root;

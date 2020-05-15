@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define BKND_ERROR "\e[1;35mBackend: \e[31merror:\e[0m"
 
 const char IF_LABELS_NAME[] = "if_";
 const char ELSE_LABELS_NAME[] = "else_";
@@ -17,44 +18,55 @@ int Global = 123456789;
 
 
 #include "Tree.h"
-#include "DSL\DSL_definitions.h"
+#include "DSL/DSL_definitions.h"
 
 
-void BackEnd (tree *root, char file_name[MAX_FILE_NAME]);
-void WrightE (tree *node, FILE *output);
-void WrightAsm (tree *node, FILE *output);
+void BackEnd (tree *root, const char file_name[MAX_FILE_NAME]);
+void WriteE (tree *node, FILE *output);
+void WriteAsm (tree *node, FILE *output);
 
 #include "Common.cpp"
 
 
-int main ()
+int main (int argc, const char **argv)
 {
+	if (argc < 3)
+	{
+		printf("%s no input or/and output file\n", BKND_ERROR);
+		return 1;
+	}
+	printf("Backend called for file \"%s\" -o \"%s\"\n", argv[1], argv[2]);
+
 	printf("\nBackend:\n|Reading...\n");
-	tree *root = ReadTree ("Program\\program_tree.txt");
+	tree *root = ReadTree (argv[1]);
+	if (root == NULL)
+	{
+		printf("%s Wrong input file.\n", BKND_ERROR);
+	}
 	//printf("Dumping...\n");
-	//Dump (root, "Program\\backend_tree.png");
+	//Dump (root, "Program/backend_tree.png");
 	//printf("Printing...\n");
 	//PrintTree (root, "out.txt");
 	printf("|Operating...\n");
-	BackEnd (root, "Program\\object.asm");
+	BackEnd (root, argv[2]);
 }
 
 
-tree *WrightGlobal (tree *node, FILE *output)
+tree *WriteGlobal (tree *node, FILE *output)
 {
 	if (node->right->data == VAR_NUM)
 	{
 		int tmp = (int) FindVar (node->right->right->data);
 		if (tmp < Global) Global = tmp;
-		WrightAsm (node->right, output);
+		WriteAsm (node->right, output);
 	}
 	else return node;
-	if (node->left != NULL) return WrightGlobal (node->left, output);
+	if (node->left != NULL) return WriteGlobal (node->left, output);
 	else return NULL;
 }
 
 
-void WrightAsm (tree *node, FILE *output)
+void WriteAsm (tree *node, FILE *output)
 {
 	int tmp = 0;
 	switch (node->type)
@@ -64,22 +76,22 @@ void WrightAsm (tree *node, FILE *output)
 			switch ((int) node->data)
 			{
 				case P_NUM:
-					if (node->right != NULL) node = WrightGlobal (node->right, output);
+					if (node->right != NULL) node = WriteGlobal (node->right, output);
 					fprintf (output, "PUSH AX\nPUSH %d\nADD\nPOP AX\nCALL Principalis\nEND\n", MAX_VARIABLES_IN_BLOCK);
-					if (node != NULL) WrightAsm (node, output);
+					if (node != NULL) WriteAsm (node, output);
 					break;
 
 				case B_NUM:
-					WrightAsm (node->right, output);
+					WriteAsm (node->right, output);
 					break;
 
 				case RETURN_NUM:
-					if (node->right != NULL) WrightE (node->right, output);
+					if (node->right != NULL) WriteE (node->right, output);
 					fprintf (output, "PUSH AX\nPUSH %d\nSUB\nPOP AX\nRETURN\n", MAX_VARIABLES_IN_BLOCK);
 					break;
 
 				case PRINT_NUM:
-					WrightE (node->right, output);
+					WriteE (node->right, output);
 					fprintf (output, "OUT\n");
 					break;
 
@@ -102,14 +114,14 @@ void WrightAsm (tree *node, FILE *output)
 			switch ((int) node->data)
 			{
 				case D_NUM:
-					WrightAsm (node->right, output);
-					if (node->left != NULL) WrightAsm (node->left, output);
+					WriteAsm (node->right, output);
+					if (node->left != NULL) WriteAsm (node->left, output);
 					break;
 
 				case VAR_NUM:
 					if (node->parent->data != VARLIST_NUM)
 					{
-						if (node->left != NULL) WrightE (node->left, output);
+						if (node->left != NULL) WriteE (node->left, output);
 						else fprintf (output, "PUSH %d\n", NOT_INITIALAISED_VAR);
 					}
 					fprintf (output, "POP [AX+%d]\n", (int) FindVar (node->right->data));
@@ -117,23 +129,23 @@ void WrightAsm (tree *node, FILE *output)
 
 				case DEF_NUM:
 					fprintf (output, "\n\n:%s\n", functions[FindFunc (node->right->data)].name);
-					if (node->left != NULL) WrightAsm (node->left, output);
-					WrightAsm (node->right->right, output);
+					if (node->left != NULL) WriteAsm (node->left, output);
+					WriteAsm (node->right->right, output);
 					break;
 
 				case VARLIST_NUM:
-					if (node->right->data == VAR_NUM) WrightAsm (node->right, output);
-					else WrightE (node->right, output);
-					if (node->left != NULL) WrightAsm (node->left, output);
+					if (node->right->data == VAR_NUM) WriteAsm (node->right, output);
+					else WriteE (node->right, output);
+					if (node->left != NULL) WriteAsm (node->left, output);
 					break;
 
 				case OPER_NUM:
-					WrightAsm (node->right, output);
-					if (node->left != NULL) WrightAsm (node->left, output);
+					WriteAsm (node->right, output);
+					if (node->left != NULL) WriteAsm (node->left, output);
 					break;
 
 				case ASSN_NUM:
-					WrightE (node->right, output);
+					WriteE (node->right, output);
 					tmp = (int) FindVar (node->left->data);
 					if (tmp < Global) fprintf (output, "POP [AX+%d]\n", tmp);
 					else fprintf (output, "POP [%d]\n", tmp);
@@ -141,7 +153,7 @@ void WrightAsm (tree *node, FILE *output)
 					break;
 
 				case CALL_NUM:
-					if (node->left != NULL) WrightAsm (node->left, output);
+					if (node->left != NULL) WriteAsm (node->left, output);
 					fprintf (output, "PUSH AX\nPUSH %d\nADD\nPOP AX\n", MAX_VARIABLES_IN_BLOCK);
 					fprintf (output, "CALL %s\n", functions[FindFunc (node->right->data)].name);
 					break;
@@ -149,16 +161,16 @@ void WrightAsm (tree *node, FILE *output)
 				case IF_NUM:
 				{
 					int Cur_label = If_label_num++;
-					WrightE (node->left->right, output);
-					WrightE (node->left->left, output);
+					WriteE (node->left->right, output);
+					WriteE (node->left->left, output);
 					switch ((int) node->left->data)
 					{
 						#define JMP(asm, num, l_num) case num: fprintf (output, #asm); break;
-						#include "DSL\DSL_jumps.h"
+						#include "DSL/DSL_jumps.h"
 						#undef JMP
 					}
 					fprintf (output, " %s%d\n", IF_LABELS_NAME, Cur_label);
-					WrightAsm (node->right->right, output);
+					WriteAsm (node->right->right, output);
 					if (node->right->left != NULL) fprintf (output, "PUSH 1\nPUSH 0\nJNE %s%d\n", ELSE_LABELS_NAME, Cur_label);
 					fprintf (output, ":%s%d\n", IF_LABELS_NAME, Cur_label);
 					if (node->right->left != NULL)
@@ -171,16 +183,16 @@ void WrightAsm (tree *node, FILE *output)
 
 				case WHILE_NUM:
 					fprintf(output, ":%s%d\n", WHILE_LABELS_NAME, While_label_num);
-					WrightE (node->left->right, output);
-					WrightE (node->left->left, output);
+					WriteE (node->left->right, output);
+					WriteE (node->left->left, output);
 					switch ((int) node->left->data)
 					{
 						#define JMP(asm, num, l_num) case num: fprintf (output, #asm); break;
-						#include "DSL\DSL_jumps.h"
+						#include "DSL/DSL_jumps.h"
 						#undef JMP
 					}
 					fprintf (output, " %s%d\n", STOP_LABELS_NAME, While_label_num);
-					WrightAsm (node->right, output);
+					WriteAsm (node->right, output);
 					fprintf(output, "JMP %s%d\n:%s%d\n", WHILE_LABELS_NAME, While_label_num++, STOP_LABELS_NAME, While_label_num);
 					break;
 
@@ -203,32 +215,32 @@ void WrightAsm (tree *node, FILE *output)
 }
 
 
-void BackEnd (tree *root, char file_name[MAX_FILE_NAME])
+void BackEnd (tree *root, const char file_name[MAX_FILE_NAME])
 {
 	FILE *output = fopen (file_name, "w");
-	WrightAsm (root, output);
+	WriteAsm (root, output);
 	fprintf(output, "\n\nEND_\n");
 }
 
 
-void WrightE (tree *node, FILE *output)
+void WriteE (tree *node, FILE *output)
 {
 	int tmp = 0;
 	switch (node->type)
 	{
 		case FUNCTION:
-			WrightE (node->right, output);
+			WriteE (node->right, output);
 			switch ((int) node->data)
 			{
 				#define FUNCTION(name, diff_description, asm_name) case name##NUM: fprintf(output, "%s\n", asm_name); break;
-				#include "DSL\DSL_function_descriptions.h"
+				#include "DSL/DSL_function_descriptions.h"
 				#undef FUNCTION
 			}
 			break;
 
 		case OPERATOR:
-			if (node->left != NULL && node->data != CALL_NUM) WrightE (node->left, output);
-			if (node->right != NULL && node->data != CALL_NUM) WrightE (node->right, output);
+			if (node->left != NULL && node->data != CALL_NUM) WriteE (node->left, output);
+			if (node->right != NULL && node->data != CALL_NUM) WriteE (node->right, output);
 			switch ((int) node->data)
 			{
 				case PLUS_NUM:
@@ -248,7 +260,7 @@ void WrightE (tree *node, FILE *output)
 					break;
 
 				case CALL_NUM:
-					WrightAsm (node, output);
+					WriteAsm (node, output);
 					break;
 			}
 			break;

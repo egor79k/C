@@ -48,7 +48,7 @@ void PrintTree (tree *root, char file_name[MAX_FILE_NAME]);
 //char *Get_Buff_From_File (char file_name[MAX_FILE_NAME]);
 void WriteLabels (tree *node, FILE *out);
 void WriteConnections (tree *node, FILE *out);
-void Dump (tree *root, char png_file[MAX_FILE_NAME], const char mode = 'l');
+void Dump (tree *root, const char png_file[MAX_FILE_NAME], const char mode = 'l');
 
 int TreeOk (tree *node);
 void CheckTree (tree *root);

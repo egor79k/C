@@ -59,8 +59,13 @@ int main (int argc, const char **argv)
 	tree *root = GetProg ();
 	printf("|Printing...\n");
 	PrintTree (root, argv[2]);
-	printf("|Dumping...\n");
-	Dump (root, "Program/frontend_tree.svg");
+
+	if (argc > 3)
+	{
+		printf("|Dumping...\n");
+		Dump (root, argv[3]);
+	}
+	
 	return 0;
 }
 
