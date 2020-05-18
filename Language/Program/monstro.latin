@@ -1,0 +1,8 @@
+			Definire Monstro bona val numerus:
+Primum: Variabilis multir assignare 1, donec numerus partem multir plus 0
+	Primum: multir assignare multir productum 10!, multir assignare multir partem 10, donec multir plus 0
+	Primum: scribo numerus partem multir, numerus assignare numerus subtrahere bona numerus partem multir simul productum multir, multir assignare multir partem 10!,
+	reditum 0!
+
+			Definire Principalis bona:
+Primum: Monstro bona 1234:, reditum 0!

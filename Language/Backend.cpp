@@ -13,6 +13,8 @@ const char STOP_LABELS_NAME[]  = "stop_";
 int If_label_num    = 0;
 int While_label_num = 0;
 
+//const char VAR_ADDR_REG[]      = "r8";
+
 const int NOT_INITIALAISED_VAR   = -666;// very bad
 const int MAX_VARIABLES_IN_BLOCK = 16;	// num of locals for one function
 const int VAR_SIZE               = 8;	// bytes
@@ -81,7 +83,7 @@ void WriteAsm (tree *node, FILE *output)
 				case P_NUM:
 					if (node->right != NULL) node = WriteGlobal (node->right, output);
 					//fprintf (output, "push AX\npush %d\nadd\npop AX\nCALL Principalis\nEND\n", MAX_VARIABLES_IN_BLOCK);
-					fprintf(output, "\tadd rdi, %d\n\tcall Principalis\n\tmov rax, 0x3C\n\txor rdi, rdi\n\tsyscall\n\tret\n", MAX_VARIABLES_IN_BLOCK * VAR_SIZE);
+					fprintf(output, "\tadd r8, %d\n\tcall Principalis\n\tmov rax, 0x3C\n\txor r8, r8\n\tsyscall\n\tret\n", MAX_VARIABLES_IN_BLOCK * VAR_SIZE);
 					if (node != NULL) WriteAsm (node, output);
 					break;
 
@@ -99,7 +101,7 @@ void WriteAsm (tree *node, FILE *output)
 						fprintf(output, "\tpush rax    ; Push ret addr\n");
 					}
 					//fprintf (output, "push AX\npush %d\nsub\npop AX\nRETURN\n", MAX_VARIABLES_IN_BLOCK);
-					fprintf(output, "\tsub rdi, %d\n\tret\n\n", MAX_VARIABLES_IN_BLOCK * VAR_SIZE);
+					fprintf(output, "\tsub r8, %d\n\tret\n\n", MAX_VARIABLES_IN_BLOCK * VAR_SIZE);
 					break;
 
 				case PRINT_NUM:
@@ -108,10 +110,10 @@ void WriteAsm (tree *node, FILE *output)
 					break;
 
 				case READ_NUM:
-					fprintf (output, "IN\n");
 					tmp = (int) FindVar (node->right->data);
-					if (tmp < Global) fprintf (output, "\tpop qword [loc_mem + rdi+%d]\n", tmp * VAR_SIZE);
-					else fprintf (output, "\tpop qword [loc_mem + %d]\n", tmp * VAR_SIZE);
+					if (tmp < Global) fprintf (output, "\n\tmov rsi, loc_mem + %d\n\tadd rsi, r8\n", tmp * VAR_SIZE);
+					else fprintf (output, "\n\tmov rsi, loc_mem + %d\n", tmp * VAR_SIZE);
+					fprintf (output, "%s\n", IN);
 					break;
 
 				default:
@@ -136,7 +138,7 @@ void WriteAsm (tree *node, FILE *output)
 						if (node->left != NULL) WriteE (node->left, output);
 						else fprintf (output, "\tpush %d\n", NOT_INITIALAISED_VAR);
 					}
-					fprintf (output, "\tpop qword [loc_mem + rdi + %d]\n", (int) FindVar (node->right->data) * VAR_SIZE);
+					fprintf (output, "\tpop qword [loc_mem + r8 + %d]\n", (int) FindVar (node->right->data) * VAR_SIZE);
 					break;
 
 				case DEF_NUM:
@@ -164,14 +166,14 @@ void WriteAsm (tree *node, FILE *output)
 				case ASSN_NUM:
 					WriteE (node->right, output);
 					tmp = (int) FindVar (node->left->data);
-					if (tmp < Global) fprintf (output, "\tpop qword [loc_mem + rdi + %d]\n", tmp * VAR_SIZE);
+					if (tmp < Global) fprintf (output, "\tpop qword [loc_mem + r8 + %d]\n", tmp * VAR_SIZE);
 					else fprintf (output, "\tpop qword [loc_mem + %d]\n", tmp * VAR_SIZE);
 					//fprintf (output, "pop [AX+%d]\n", (int) FindVar (node->left->data));
 					break;
 
 				case CALL_NUM:
 					if (node->left != NULL) WriteAsm (node->left, output);
-					fprintf (output, "\tadd rdi, %d\n", MAX_VARIABLES_IN_BLOCK * VAR_SIZE);
+					fprintf (output, "\tadd r8, %d\n", MAX_VARIABLES_IN_BLOCK * VAR_SIZE);
 					fprintf (output, "\tcall %s\n", functions[FindFunc (node->right->data)].name);
 					break;
 
@@ -180,7 +182,7 @@ void WriteAsm (tree *node, FILE *output)
 					int Cur_label = If_label_num++;
 					WriteE (node->left->right, output);
 					WriteE (node->left->left, output);
-					fprintf(output, "\tpop rcx\n\tpop rbx\n\tcmp rbx, rcx\n\t");
+					fprintf(output, "\tpop rcx\n\tpop rbx\n\tcmp rcx, rbx\n\t");
 					switch ((int) node->left->data)
 					{
 						#define JMP(asm, num, l_num) case num: fprintf (output, #asm); break;
@@ -203,7 +205,7 @@ void WriteAsm (tree *node, FILE *output)
 					fprintf(output, "%s%d:\n", WHILE_LABELS_NAME, While_label_num);
 					WriteE (node->left->right, output);
 					WriteE (node->left->left, output);
-					fprintf(output, "\tpop rcx\n\tpop rbx\n\tcmp rbx, rcx\n\t");
+					fprintf(output, "\tpop rcx\n\tpop rbx\n\tcmp rcx, rbx\n\t");
 					switch ((int) node->left->data)
 					{
 						#define JMP(asm, num, l_num) case num: fprintf (output, #asm); break;
@@ -276,7 +278,7 @@ void WriteE (tree *node, FILE *output)
 					break;
 
 				case DIV_NUM:
-					fprintf (output, "\tpop rcx\n\tpop rbx\n\tdiv rbx, rcx\n\tpush rbx\n");
+					fprintf (output, "\tpop rcx\n\tpop rax\n\txor rdx, rdx\n\tdiv rcx\n\tpush rax\n");
 					break;
 
 				case CALL_NUM:
@@ -287,7 +289,7 @@ void WriteE (tree *node, FILE *output)
 
 		case VARIABLE:
 			tmp = (int) FindVar (node->data);
-			if (tmp < Global) fprintf (output, "\tpush qword [loc_mem + rdi + %d]\n", tmp * VAR_SIZE);
+			if (tmp < Global) fprintf (output, "\tpush qword [loc_mem + r8 + %d]\n", tmp * VAR_SIZE);
 			else fprintf (output, "\tpush qword [loc_mem + %d]\n", tmp * VAR_SIZE);
 			break;
 

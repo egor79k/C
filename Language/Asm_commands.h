@@ -5,8 +5,8 @@ const char ASM_BEGIN[] = 	"global _start		\n\n"
 							"section .bss		\n\t"
 							"loc_mem resb 1024	\n\n"
 							"section .text		\n"
-							"_start:			\n\t"
-							"	xor rdi, rdi	\n";
+							"_start:			\n"
+							"	xor r8, r8		\n";
 
 const char PUSH[] = "push";
 const char POP[]  = "pop";
@@ -15,17 +15,31 @@ const char SUB[]  = "sub";
 const char MUL[]  = "mul";
 const char DIV[]  = "div";
 
-const char IN[]   = "\t xor rax, rax	\n\t"
-					"	mov rdx, 1		\n\t"
-					"	mov rdi, 1		\n\t"
-					"	mov rsi, loc_mem\n\t"
-					"	syscall			\n\t"
-					"	push qword [loc_mem]\n";
+const char IN[]   = "	xor rax, rax	\n"
+					"	mov rdx, 1		\n"
+					"	mov rdi, 1		\n"
+					//"	mov rsi, loc_mem\n"
+					"	syscall			\n";
+					//"	push qword [loc_mem]\n";
 
-const char OUT[]  = "OUT";
+const char OUT[]  = "	add rax, 48			\n"
+					"	mov [loc_mem], rax	\n"
+					"	mov rsi, loc_mem	\n"
+					"	mov rdx, 1			\n"
+					"	mov rdi, 1			\n"
+					"	mov rax, 1			\n"
+					"	syscall				\n";
 /*const char [] = "";
 const char [] = "";
 const char [] = "";
 const char [] = "";
 const char [] = "";
 const char [] = "";*/
+
+/*add rax, 48
+	mov [loc_mem], rax
+	mov rsi, loc_mem
+	mov rdx, 1
+	mov rdi, 1
+	mov rax, 1
+	syscall*/
