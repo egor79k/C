@@ -273,7 +273,7 @@ tree *GetOp ()
 			case L_RETURN_NUM:
 				SKIP_WORD
 				SKIP_EMPTY
-				if (*str != L_OPER_SPLITTER) right = FUNC(RETURN_NUM, GetE());
+				if (*str != L_OPER_SPLITTER && *str != L_END_SIGN) right = FUNC(RETURN_NUM, GetE());
 				else right = FUNC(RETURN_NUM, NULL);
 				break;
 

@@ -1,10 +1,14 @@
-				  Variabilis nulla assignare 0
-				  Variabilis unus assignare 1
+				Definire Monstro bona Variabilis numerus:
+Primum: si numerus est 0
+	Primum: scribo 48, reditum!, Variabilis multir assignare 1, donec numerus partem multir plus 0
+	Primum: multir assignare multir productum 10!, multir assignare multir partem 10, donec multir plus 0
+	Primum: scribo numerus partem multir adde 48, numerus assignare numerus subtrahere bona numerus partem multir simul productum multir, multir assignare multir partem 10!,
+	reditum!
 
-                Definire Factorial bona val num:
-Primum: si num est nulla
-    Primum: reditum unus!, si num minus nulla
-    Primum: reditum nulla!, reditum num productum Factorial bona num subtrahere unus:!
+                Definire Factorial bona Variabilis num:
+Primum: si num est 0
+    Primum: reditum 1!, si num minus 0
+    Primum: reditum 0!, reditum num productum Factorial bona num subtrahere 1:!
     
                 Definire Principalis bona:
-Primum: Variabilis num assignare nulla, lego num, reditum Factorial bona num:!
+Primum: Variabilis num assignare 5, Monstro bona Factorial bona num::, scribo 10, reditum!

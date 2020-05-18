@@ -106,7 +106,7 @@ void WriteAsm (tree *node, FILE *output)
 
 				case PRINT_NUM:
 					WriteE (node->right, output);
-					fprintf (output, "OUT\n");
+					fprintf (output, "\n%s\n", OUT);
 					break;
 
 				case READ_NUM:

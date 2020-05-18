@@ -3,7 +3,7 @@
 
 const char ASM_BEGIN[] = 	"global _start		\n\n"
 							"section .bss		\n\t"
-							"loc_mem resb 1024	\n\n"
+							"loc_mem resb 16384	\n\n"
 							"section .text		\n"
 							"_start:			\n"
 							"	xor r8, r8		\n";
@@ -15,20 +15,20 @@ const char SUB[]  = "sub";
 const char MUL[]  = "mul";
 const char DIV[]  = "div";
 
-const char IN[]   = "	xor rax, rax	\n"
+const char IN[]   = "	xor rax, rax	; Read\n"
 					"	mov rdx, 1		\n"
 					"	mov rdi, 1		\n"
 					//"	mov rsi, loc_mem\n"
 					"	syscall			\n";
 					//"	push qword [loc_mem]\n";
 
-const char OUT[]  = "	add rax, 48			\n"
-					"	mov [loc_mem], rax	\n"
-					"	mov rsi, loc_mem	\n"
-					"	mov rdx, 1			\n"
-					"	mov rdi, 1			\n"
-					"	mov rax, 1			\n"
-					"	syscall				\n";
+const char OUT[]  =	"	pop qword [loc_mem]		; Print\n"
+					//"	add qword [loc_mem], 48	\n"	// num + ASCII_offset
+					"	mov rsi, loc_mem		\n"
+					"	mov rdx, 1				\n"
+					"	mov rdi, 1				\n"
+					"	mov rax, 1				\n"
+					"	syscall					\n";
 /*const char [] = "";
 const char [] = "";
 const char [] = "";

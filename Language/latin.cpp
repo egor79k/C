@@ -34,6 +34,7 @@ const char *Tree_file_type     = ".svg";
 const char *L_input_file_type = ".o";
 const char *L_name_flag       = " -o ";
 const char *HELP_FLAG         = "-h";
+const char *FOLDER_POSTFIX    = "_temp/";
 
 bool SAVE_INTER_FILES = false;
 bool ONLY_F           = false;
@@ -100,8 +101,9 @@ int main (int argc, char ** argv)
 	strcpy (&F_call[15], argv[arg_num]);
 	strcpy (&F_call[strlen (F_call)], argv[arg_num]);
 
-	argv[arg_num][type_index] = '/';
-	argv[arg_num][type_index + 1] = '\0';
+	//argv[arg_num][type_index] = '/';
+	//argv[arg_num][type_index + 1] = '\0';
+	strcpy (&argv[arg_num][type_index], FOLDER_POSTFIX);
 	strcpy (&folder_name[1], argv[arg_num]);
 	strcpy (&make_dir[5], folder_name);
 	system (make_dir);
