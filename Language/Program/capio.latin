@@ -1,6 +1,6 @@
 			Definire Capio bona:
-Primum: Variabilis signum assignare 0, Variabilis multir assignare 1, Variabilis numerus assignare 0, lego signum, donec signum inaequale 10
-	Primum: numerus assignare numerus adde bona signum subtrahere 48 simul productum multir, multir assignare multir productum 10, lego signum!,
+Primum: Variabilis signum assignare 0, Variabilis numerus assignare 0, lego signum, donec signum inaequale 10
+	Primum: numerus assignare numerus productum 10 adde bona signum subtrahere 48 simul, lego signum!,
 	reditum numerus!
 
 			Definire Monstro bona Variabilis numerus:
@@ -12,4 +12,4 @@ Primum: si numerus est 0
 
 			Definire Principalis bona:
 Primum: Variabilis num assignare Capio bona:, donec num inaequale 0
-	Primum: Monstro bona num:, num assignare Capio bona:!, reditum!
+	Primum: Monstro bona num:, scribo 10, num assignare Capio bona:!, reditum!
