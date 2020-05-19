@@ -1,11 +1,22 @@
-				Variabilis nulla assignare 0
-				Variabilis unus assignare 1
+			Definire Capio bona:
+Primum: Variabilis figura assignare 0, Variabilis signum assignare 1, Variabilis numerus assignare 0, lego figura, si figura est 45
+	Primum: signum assignare -1, lego figura!, donec figura inaequale 10
+	Primum: numerus assignare numerus productum 10 adde bona figura subtrahere 48 simul, lego figura!,
+	reditum numerus productum signum!
+
+			Definire Monstro bona Variabilis numerus:
+Primum: si numerus est 0
+	Primum: scribo 48, reditum!, si numerus plusest -2147483648
+	Primum: numerus assignare numerus productum -1, scribo 45!, Variabilis multir assignare 1, donec numerus partem multir plus 0
+	Primum: multir assignare multir productum 10!, multir assignare multir partem 10, donec multir plus 0
+	Primum: scribo numerus partem multir adde 48, numerus assignare numerus subtrahere bona numerus partem multir simul productum multir, multir assignare multir partem 10!,
+	reditum!
 
 			Definire Fibonacci bona Variabilis num:
-Primum: si num minus nulla
-Primum: reditum num!, si num est nulla
-Primum: reditum nulla!, si num est unus
-Primum: reditum unus!, reditum Fibonacci bona num subtrahere unus: adde Fibonacci bona num subtrahere 2:!
+Primum: si num plusest -2147483648
+Primum: reditum num!, si num est 0
+Primum: reditum 0!, si num est 1
+Primum: reditum 1!, reditum Fibonacci bona num subtrahere 1: adde Fibonacci bona num subtrahere 2:!
 
 			Definire Principalis bona:
-Primum: Variabilis num assignare nulla, lego num, reditum Fibonacci bona num:!
+Primum: Monstro bona Fibonacci bona Capio bona:::, scribo 10, reditum!
