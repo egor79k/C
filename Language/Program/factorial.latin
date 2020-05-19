@@ -1,18 +1,20 @@
 				Definire Capio bona:
-Primum: Variabilis signum assignare 0, Variabilis numerus assignare 0, lego signum, donec signum inaequale 10
-	Primum: numerus assignare numerus productum 10 adde bona signum subtrahere 48 simul, lego signum!,
-	reditum numerus!
+Primum: Variabilis figura assignare 0, Variabilis signum assignare 1, Variabilis numerus assignare 0, lego figura, si figura est 45
+	Primum: signum assignare -1, lego figura!, donec figura inaequale 10
+	Primum: numerus assignare numerus productum 10 adde bona figura subtrahere 48 simul, lego figura!,
+	reditum numerus productum signum!
 
 				Definire Monstro bona Variabilis numerus:
 Primum: si numerus est 0
-	Primum: scribo 48, reditum!, Variabilis multir assignare 1, donec numerus partem multir plus 0
+	Primum: scribo 48, reditum!, si numerus plusest -2147483648
+	Primum: numerus assignare numerus productum -1, scribo 45!, Variabilis multir assignare 1, donec numerus partem multir plus 0
 	Primum: multir assignare multir productum 10!, multir assignare multir partem 10, donec multir plus 0
 	Primum: scribo numerus partem multir adde 48, numerus assignare numerus subtrahere bona numerus partem multir simul productum multir, multir assignare multir partem 10!,
 	reditum!
 
                 Definire Factorial bona Variabilis num:
 Primum: si num est 0
-    Primum: reditum 1!, si num minus 0
+    Primum: reditum 1!, si num plusest -2147483648
     Primum: reditum 0!, reditum num productum Factorial bona num subtrahere 1:!
     
                 Definire Principalis bona:
