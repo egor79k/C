@@ -1,9 +1,17 @@
 			Definire Monstro bona Variabilis numerus:
 Primum: si numerus est 0
-	Primum: scribo 48, reditum!, Variabilis multir assignare 1, donec numerus partem multir plus 0
+	Primum: scribo 48, reditum!, si numerus plusest -2147483648
+	Primum: numerus assignare numerus productum -1, scribo 45!, Variabilis multir assignare 1, donec numerus partem multir plus 0
 	Primum: multir assignare multir productum 10!, multir assignare multir partem 10, donec multir plus 0
 	Primum: scribo numerus partem multir adde 48, numerus assignare numerus subtrahere bona numerus partem multir simul productum multir, multir assignare multir partem 10!,
 	reditum!
 
 			Definire Principalis bona:
-Primum: Monstro bona 0:, scribo 32, Monstro bona 2000000002:, scribo 32, Monstro bona 256:, scribo 32, Monstro bona 1:, scribo 32, Monstro bona 1234:, reditum!
+Primum: Monstro bona 0:, scribo 32,
+		Monstro bona -1:, scribo 32,
+		Monstro bona 1:, scribo 32,
+		Monstro bona -15:, scribo 32,
+		Monstro bona -2000000002:, scribo 32,
+		Monstro bona 256:, scribo 32,
+		Monstro bona 1:, scribo 32,
+		Monstro bona 1234:, scribo 10, reditum!

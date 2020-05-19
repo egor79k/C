@@ -278,7 +278,7 @@ void WriteE (tree *node, FILE *output)
 					break;
 
 				case DIV_NUM:
-					fprintf (output, "\tpop rcx\n\tpop rax\n\txor rdx, rdx\n\tdiv rcx\n\tpush rax\n");
+					fprintf (output, "\tpop rcx\n\tpop rax\n\txor rdx, rdx\n\tidiv rcx\n\tpush rax\n");
 					break;
 
 				case CALL_NUM:
