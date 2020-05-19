@@ -64,8 +64,8 @@ const char RETURN_[]   = "Return";	//FUNC
 const char PRINT_[]    = "Print";	//FUNC
 const char READ_[]     = "Read";	//FUNC
 const char D_[]        = "D";
-const char P_[]        = "P";	//FUNC
-const char B_[]        = "B";	//FUNC
+const char P_[]        = "P";		//FUNC
+const char B_[]        = "B";		//FUNC
 const char C_[]        = "C";
 
 

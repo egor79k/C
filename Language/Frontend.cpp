@@ -45,7 +45,7 @@ int main (int argc, const char **argv)
 		printf("%s no input or/and output file\n", TRNS_ERROR);
 		return 1;
 	}
-	printf("Frontend called for file \"%s\" -o \"%s\"\n", argv[1], argv[2]);
+	//printf("\e[1;35mFrontend\e[0m called for file \"%s\" -o \"%s\"\n", argv[1], argv[2]);
 
 	str = GetBuffer (argv[1]);
 
@@ -55,16 +55,10 @@ int main (int argc, const char **argv)
 		return 1;
 	}
 
-	printf("|Operating...\n");
 	tree *root = GetProg ();
-	printf("|Printing...\n");
 	PrintTree (root, argv[2]);
 
-	if (argc > 3)
-	{
-		printf("|Dumping...\n");
-		Dump (root, argv[3]);
-	}
+	if (argc > 3) Dump (root, argv[3]);
 	
 	return 0;
 }
@@ -294,7 +288,7 @@ tree *GetOp ()
 				else if (FindFunc (val) >= 0) right = GetCall ();
 				else
 				{
-					printf ("\nSyntax error: \"%d\" was not declared in this scope\n", val);	
+					printf ("\nSyntax error: \"%g\" was not declared in this scope\n", val);	
 					return NULL;
 				}
 				break;
@@ -522,7 +516,7 @@ tree *GetF ()
 	}
 	else
 	{
-		printf("Syntax error: unknown function %d\n", val);
+		printf("Syntax error: unknown function %g\n", val);
 		return NULL;
 	}
 }

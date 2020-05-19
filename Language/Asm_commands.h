@@ -18,12 +18,9 @@ const char DIV[]  = "div";
 const char IN[]   = "	xor rax, rax	; Read\n"
 					"	mov rdx, 1		\n"
 					"	mov rdi, 1		\n"
-					//"	mov rsi, loc_mem\n"
 					"	syscall			\n";
-					//"	push qword [loc_mem]\n";
 
 const char OUT[]  =	"	pop qword [loc_mem]		; Print\n"
-					//"	add qword [loc_mem], 48	\n"	// num + ASCII_offset
 					"	mov rsi, loc_mem		\n"
 					"	mov rdx, 1				\n"
 					"	mov rdi, 1				\n"

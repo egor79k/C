@@ -9,6 +9,7 @@
 //			-n 					-only frontending, backending and nasm
 //			-t 					-draw frontend tree
 //			-s 					-save all intermediary files
+//			-e 					-echo operations
 //			-c 					-quote M.Cicero
 //::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -41,6 +42,7 @@ bool ONLY_F           = false;
 bool ONLY_F_B         = false;
 bool ONLY_F_B_N       = false;
 bool DRAW_TREE        = false;
+bool ECHO             = false;
 
 
 void Help ()
@@ -53,6 +55,7 @@ void Help ()
 	printf ("-n  only frontending, backending and nasm\n");
 	printf ("-t  draw frontend tree\n");
 	printf ("-s  save all intermediary files\n");
+	printf ("-e  echo operations\n");
 	printf ("-c  quote M.Cicero (NOT SUPPORTED YET)\n\n");
 	return;
 }
@@ -101,8 +104,6 @@ int main (int argc, char ** argv)
 	strcpy (&F_call[15], argv[arg_num]);
 	strcpy (&F_call[strlen (F_call)], argv[arg_num]);
 
-	//argv[arg_num][type_index] = '/';
-	//argv[arg_num][type_index + 1] = '\0';
 	strcpy (&argv[arg_num][type_index], FOLDER_POSTFIX);
 	strcpy (&folder_name[1], argv[arg_num]);
 	strcpy (&make_dir[5], folder_name);
@@ -153,6 +154,10 @@ int main (int argc, char ** argv)
 					SAVE_INTER_FILES = true;
 					break;
 
+				case 'e':
+					ECHO = true;
+					break;
+
 				case 't':
 					DRAW_TREE = true;
 					strcpy (&argv[1][type_index], Tree_file_type);
@@ -176,9 +181,7 @@ int main (int argc, char ** argv)
 	}
 
 
-
-	printf("%s\n", F_call);
-
+	if (ECHO) printf("%s\n", F_call);
 	system (F_call);
 
 	if (!ONLY_F)
@@ -190,14 +193,16 @@ int main (int argc, char ** argv)
 		strcpy (&argv[1][type_index], B_N_file_type);
 		strcpy (&B_call[strlen (B_call)], folder_name);
 		strcpy (&B_call[strlen (B_call)], &argv[1][file_name_index]);
-printf("%s\n", B_call);
+
+		if (ECHO) printf("%s\n", B_call);
 		system (B_call);
 
 		if (!ONLY_F_B)
 		{
 			strcpy (&N_call[14], folder_name);
 			strcpy (&N_call[strlen (N_call)], &argv[1][file_name_index]);
-printf("%s\n", N_call);
+
+			if (ECHO) printf("%s\n", N_call);
 			system (N_call);
 
 			if (!ONLY_F_B_N)
@@ -208,7 +213,8 @@ printf("%s\n", N_call);
 				strcpy (&L_call[strlen (L_call)], L_name_flag);
 				argv[1][type_index] = '\0';
 				strcpy (&L_call[strlen (L_call)], &argv[1][0]);
-printf("%s\n", L_call);
+
+				if (ECHO) printf("%s\n", L_call);
 				system (L_call);
 			}
 		}

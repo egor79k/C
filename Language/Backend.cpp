@@ -2,6 +2,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include "Asm_commands.h"
+#include "Tree.h"
+#include "DSL/DSL_definitions.h"
+#include "Common.cpp"
+
 
 #define BKND_ERROR "\e[1;35mBackend: \e[31merror:\e[0m"
 
@@ -22,15 +26,10 @@ const int VAR_SIZE               = 8;	// bytes
 int Global = 123456789;
 
 
-#include "Tree.h"
-#include "DSL/DSL_definitions.h"
-
-
 void BackEnd (tree *root, const char file_name[MAX_FILE_NAME]);
 void WriteE (tree *node, FILE *output);
 void WriteAsm (tree *node, FILE *output);
 
-#include "Common.cpp"
 
 
 int main (int argc, const char **argv)
@@ -40,19 +39,14 @@ int main (int argc, const char **argv)
 		printf("%s no input or/and output file\n", BKND_ERROR);
 		return 1;
 	}
-	printf("Backend called for file \"%s\" -o \"%s\"\n", argv[1], argv[2]);
+	//printf("\e[1;35mBackend\e[0m called for file \"%s\" -o \"%s\"\n", argv[1], argv[2]);
 
-	printf("\nBackend:\n|Reading...\n");
 	tree *root = ReadTree (argv[1]);
 	if (root == NULL)
 	{
 		printf("%s Wrong input file.\n", BKND_ERROR);
 	}
-	//printf("Dumping...\n");
-	//Dump (root, "Program/backend_tree.png");
-	//printf("Printing...\n");
-	//PrintTree (root, "out.txt");
-	printf("|Operating...\n");
+
 	BackEnd (root, argv[2]);
 }
 
@@ -117,7 +111,7 @@ void WriteAsm (tree *node, FILE *output)
 					break;
 
 				default:
-					printf("Error: unknown function %g\n", node->data);
+					printf("%s unknown function %g\n", BKND_ERROR, node->data);
 					break;
 			}
 			break;
@@ -218,18 +212,18 @@ void WriteAsm (tree *node, FILE *output)
 					break;
 
 				default:
-					printf("Error: unknown operator %g\n", node->data);
+					printf("%s unknown operator %g\n", BKND_ERROR, node->data);
 					break;
 			}
 			break;
 		}
 
 		case VARIABLE:
-			printf("Error: expected function or operator, recieved variable %g\n", node->data);
+			printf("%s expected function or operator, recieved variable %g\n", BKND_ERROR, node->data);
 			break;
 
 		case CONSTANT:
-			printf("Error: expected function or operator, recieved constant %g\n", node->data);
+			printf("%s expected function or operator, recieved constant %g\n", BKND_ERROR, node->data);
 			break;
 	}
 	return;
