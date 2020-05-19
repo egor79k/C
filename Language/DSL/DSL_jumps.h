@@ -1,3 +1,4 @@
+//Jumps matching for Frontend and Backend
 JMP(jne, EQAL_NUM,     L_EQAL_)
 JMP(je,  NO_EQAL_NUM,  L_NO_EQAL_)
 JMP(jbe, ABOVE_NUM,    L_ABOVE_)

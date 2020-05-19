@@ -9,10 +9,10 @@
 
 #define BKND_ERROR "\e[1;35mBackend: \e[31merror:\e[0m"
 
-const char IF_LABELS_NAME[]    = "if_";
-const char ELSE_LABELS_NAME[]  = "else_";
-const char WHILE_LABELS_NAME[] = "while_";
-const char STOP_LABELS_NAME[]  = "stop_";
+const char IF_LABELS_NAME[]    = ".if_";
+const char ELSE_LABELS_NAME[]  = ".else_";
+const char WHILE_LABELS_NAME[] = ".while_";
+const char STOP_LABELS_NAME[]  = ".stop_";
 
 int If_label_num    = 0;
 int While_label_num = 0;
@@ -51,6 +51,9 @@ int main (int argc, const char **argv)
 }
 
 
+//===============================
+// Declaring global variables
+//===============================
 tree *WriteGlobal (tree *node, FILE *output)
 {
 	if (node->right->data == VAR_NUM)
@@ -65,6 +68,9 @@ tree *WriteGlobal (tree *node, FILE *output)
 }
 
 
+//===============================
+// Interpritation of block parts
+//===============================
 void WriteAsm (tree *node, FILE *output)
 {
 	int tmp = 0;
@@ -76,7 +82,6 @@ void WriteAsm (tree *node, FILE *output)
 			{
 				case P_NUM:
 					if (node->right != NULL) node = WriteGlobal (node->right, output);
-					//fprintf (output, "push AX\npush %d\nadd\npop AX\nCALL Principalis\nEND\n", MAX_VARIABLES_IN_BLOCK);
 					fprintf(output, "\tadd r8, %d\n\tcall Principalis\n\tmov rax, 0x3C\n\txor r8, r8\n\tsyscall\n\tret\n", MAX_VARIABLES_IN_BLOCK * VAR_SIZE);
 					if (node != NULL) WriteAsm (node, output);
 					break;
@@ -230,15 +235,20 @@ void WriteAsm (tree *node, FILE *output)
 }
 
 
+//===============================
+// BackEnd
+//===============================
 void BackEnd (tree *root, const char file_name[MAX_FILE_NAME])
 {
 	FILE *output = fopen (file_name, "w");
 	fprintf(output, "%s\n", ASM_BEGIN);
 	WriteAsm (root, output);
-	//fprintf(output, "\n\nEND_\n");
 }
 
 
+//===============================
+// Interpritation of expression
+//===============================
 void WriteE (tree *node, FILE *output)
 {
 	int tmp = 0;
