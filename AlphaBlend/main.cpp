@@ -18,7 +18,7 @@ int main ()
 	Table.ViewImageInfo ();
 
 	//for (int i = 0; i < 1000; ++i)
-		Table.Blend_V2 (&Cat, 1, 80);
+		Table.Blend_V2 (&Cat, 16, 0);
 
 	Table.Unload (Result_file);
 
