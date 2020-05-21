@@ -40,7 +40,7 @@ public:
 
 	bool Upload (const char *FileName);
 	bool Unload (const char *FileName);
-	bool Blend  (BMP *Foreground);
+	bool Blend  (BMP *Foreground, const uint32_t cln_offset, const uint32_t str_offset);
 	void ViewImageInfo ();
 
 };
@@ -209,10 +209,8 @@ void BMP::ViewImageInfo ()
 #define F_R Foreground->Image[(((str * Foreground->Header.Width) + cln) << 2) + 2]
 #define F_A (Foreground->Image[(((str * Foreground->Header.Width) + cln) << 2) + 3] & 0xff)
 
-bool BMP::Blend  (BMP *Foreground)
+bool BMP::Blend  (BMP *Foreground, const uint32_t cln_offset, const uint32_t str_offset)
 {
-	const uint32_t str_offset = 250;
-	const uint32_t cln_offset = 200;
 	uint32_t str = 0; 
 	uint32_t cln = 0;
 
@@ -257,7 +255,9 @@ int main ()
 	printf("\n\n\e[1;21;32m|Table info:\e[0m\n");
 	Table.ViewImageInfo ();
 
-	Table.Blend (&Cat);
+	Table.Blend (&Cat, 220, 280);
+
+	Table.Blend (&Cat, 350, 240);
 
 	Table.Unload (Result_file);
 
