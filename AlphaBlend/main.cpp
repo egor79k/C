@@ -17,8 +17,8 @@ int main ()
 	//printf("\n\n\e[1;21;32m|Table info:\e[0m\n");
 	//Table.ViewImageInfo ();
 
-	for (int i = 0; i < 30000; ++i)
-	Table.Blend_V1 (&Cat, 1500, 160);
+	//for (int i = 0; i < 30000; ++i)
+	Table.Blend_V2 (&Cat, 1500, 160);
 
 	Table.Unload (Result_file);
 
