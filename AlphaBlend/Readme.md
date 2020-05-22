@@ -6,10 +6,11 @@ This program blends two BMP-32 images: ovelays foreground picture with transpare
 	Bg[G] = (Fg[A] * Fg[G] + (255 - Fg[A]) * Bg[G]) / 255;
 	Bg[R] = (Fg[A] * Fg[R] + (255 - Fg[A]) * Bg[R]) / 255;
 
+3,92x speed up
+--------------
 It takes 5 minutes 6 seconds to do 30000 blendings.
 After intrinsic SSE optimization this time reduced to 1 minute 18 seconds.
-As a result the speed up coefficient is 306/78 around 3,92.
-|3,92x speed up|
+As a result the speed up coefficient is 306/78 around 3,92x.
 
 Example
 -------
