@@ -10,4 +10,7 @@ Example
 -------
 ![Image alt](https://github.com/egor79k/C/blob/master/AlphaBlend/Murzik.bmp "Cat")
 ![Image alt](https://github.com/egor79k/C/blob/master/AlphaBlend/Mouse.bmp  "Mouse")
+
+Result
+------
 ![Image alt](https://github.com/egor79k/C/blob/master/AlphaBlend/Result.bmp "Result")
