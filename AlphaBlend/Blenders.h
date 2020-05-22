@@ -40,32 +40,32 @@ void BMP::Blend_V1  (BMP *Foreground, const uint32_t cln_offset, const uint32_t 
 #undef F_A
 
 
+#define BG_OFFSET ((str_offset + str) * Header.Width + cln_offset + cln) << 2
+#define FG_OFFSET (str * (Foreground->Header.Width - Foreground->Header.Width % 4) + cln) << 2
+
 void BMP::Blend_V2  (BMP *Foreground, const uint32_t cln_offset, const uint32_t str_offset)
 {
-	char *bkg_ptr = Image;
-	char *frg_ptr = Foreground->Image;
-
-	const __m128i low_pixel_line_half =  _mm_setr_epi8(0, 0x80, 1, 0x80, 2, 0x80, 3, 0x80, 4, 0x80, 5, 0x80, 6, 0x80, 7, 0x80);
+	const __m128i low_pixel_line_half  = _mm_setr_epi8(0, 0x80, 1, 0x80, 2, 0x80, 3, 0x80, 4, 0x80, 5, 0x80, 6, 0x80, 7, 0x80);
 	const __m128i high_pixel_line_half = _mm_setr_epi8(8, 0x80, 9, 0x80, 10, 0x80, 11, 0x80, 12, 0x80, 13, 0x80, 14, 0x80, 15, 0x80);
-	const __m128i alpha_mask =           _mm_setr_epi8(6, 0x80, 6, 0x80, 6, 0x80, 6, 0x80, 14, 0x80, 14, 0x80, 14, 0x80, 14, 0x80);
-	const __m128i store_low_half =       _mm_setr_epi8(1, 3, 5, 0x80, 9, 11, 13, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80);
-	const __m128i store_high_half =      _mm_setr_epi8(0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 1, 3, 5, 0x80, 9, 11, 13, 0x80);
+	const __m128i alpha_mask           = _mm_setr_epi8(6, 0x80, 6, 0x80, 6, 0x80, 6, 0x80, 14, 0x80, 14, 0x80, 14, 0x80, 14, 0x80);
+	const __m128i store_low_half       = _mm_setr_epi8(1, 3, 5, 0x80, 9, 11, 13, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80);
+	const __m128i store_high_half      = _mm_setr_epi8(0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 1, 3, 5, 0x80, 9, 11, 13, 0x80);
 
 	for (unsigned int str = 0; str < Foreground->Header.Height; str++)
 	{
 		for (unsigned int cln = 0; cln < Foreground->Header.Width - Foreground->Header.Width % 4; cln += 4)
 		{
 			//printf("[%d, %d]\n", str, cln);
-			unsigned int bkg_pos = ((str_offset + str) * Header.Width + cln_offset + cln) << 2;
-			unsigned int frg_pos = (str * (Foreground->Header.Width - Foreground->Header.Width % 4) + cln) << 2;
+			//unsigned int bkg_pos = ((str_offset + str) * Header.Width + cln_offset + cln) << 2;
+			//unsigned int frg_pos = (str * (Foreground->Header.Width - Foreground->Header.Width % 4) + cln) << 2;
 			//*(uint64_t *)(bkg_ptr + bkg_pos) = *(uint64_t *)(frg_ptr + frg_pos);
 			//*(uint64_t *)(bkg_ptr + bkg_pos + 8) = *(uint64_t *)(frg_ptr + frg_pos + 8);
 
 			// Background: |A3|R3|G3|B3| |A2|R2|G2|B2| |A1|R1|G1|B1| |A0|R0|G0|B0|
 			// Foreground: |A3|R3|G3|B3| |A2|R2|G2|B2| |A1|R1|G1|B1| |A0|R0|G0|B0|
 
-			__m128i bkg = _mm_load_si128(reinterpret_cast<const __m128i *>(bkg_ptr + bkg_pos));
-			__m128i frg = _mm_load_si128(reinterpret_cast<const __m128i *>(frg_ptr + frg_pos));
+			__m128i bkg = _mm_load_si128(reinterpret_cast<const __m128i *>(&Image[BG_OFFSET]));
+			__m128i frg = _mm_load_si128(reinterpret_cast<const __m128i *>(&Foreground->Image[FG_OFFSET]));
 
 			__m128i bkg1 = _mm_shuffle_epi8(bkg, low_pixel_line_half);
 			__m128i bkg2 = _mm_shuffle_epi8(bkg, high_pixel_line_half);
@@ -105,7 +105,7 @@ void BMP::Blend_V2  (BMP *Foreground, const uint32_t cln_offset, const uint32_t 
 
 			// Store
 
-			_mm_store_si128(reinterpret_cast<__m128i *>(bkg_ptr + bkg_pos), result);
+			_mm_store_si128(reinterpret_cast<__m128i *>(&Image[BG_OFFSET]), result);
 
 //            unsigned char alpha = foreground.image[frg_pos + 3];
 //            unsigned char dif2 = (frg_ptr[frg_pos + 2] - bkg_ptr[bkg_pos + 2]);
@@ -119,3 +119,6 @@ void BMP::Blend_V2  (BMP *Foreground, const uint32_t cln_offset, const uint32_t 
 
 	return;
 }
+
+#undef FG_OFFSET
+#undef BG_OFFSET

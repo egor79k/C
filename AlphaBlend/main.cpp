@@ -9,16 +9,16 @@ int main ()
 {
 	BMP Cat;
 	Cat.Upload (Foreground_file);
-	printf("\n\e[1;21;32m|Cat info:\e[0m\n");
-	Cat.ViewImageInfo ();
+	//printf("\n\e[1;21;32m|Cat info:\e[0m\n");
+	//Cat.ViewImageInfo ();
 
 	BMP Table;
 	Table.Upload (Background_file);
-	printf("\n\n\e[1;21;32m|Table info:\e[0m\n");
-	Table.ViewImageInfo ();
+	//printf("\n\n\e[1;21;32m|Table info:\e[0m\n");
+	//Table.ViewImageInfo ();
 
-	//for (int i = 0; i < 1000; ++i)
-		Table.Blend_V2 (&Cat, 1500, 160);
+	for (int i = 0; i < 30000; ++i)
+	Table.Blend_V1 (&Cat, 1500, 160);
 
 	Table.Unload (Result_file);
 
