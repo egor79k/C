@@ -1,7 +1,7 @@
 #include "BMP_class.h"
 
-const char *Foreground_file = "AskhatCat.bmp";
-const char *Background_file = "Table.bmp";
+const char *Foreground_file = "Mouse.bmp";
+const char *Background_file = "Murzik.bmp";
 const char *Result_file = "Result.bmp";
 
 
@@ -18,7 +18,7 @@ int main ()
 	Table.ViewImageInfo ();
 
 	//for (int i = 0; i < 1000; ++i)
-		Table.Blend_V2 (&Cat, 256, 80);
+		Table.Blend_V2 (&Cat, 1500, 160);
 
 	Table.Unload (Result_file);
 

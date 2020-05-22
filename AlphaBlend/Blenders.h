@@ -55,7 +55,7 @@ void BMP::Blend_V2  (BMP *Foreground, const uint32_t cln_offset, const uint32_t 
 	{
 		for (unsigned int cln = 0; cln < Foreground->Header.Width - Foreground->Header.Width % 4; cln += 4)
 		{
-			printf("[%d, %d]\n", str, cln);
+			//printf("[%d, %d]\n", str, cln);
 			unsigned int bkg_pos = ((str_offset + str) * Header.Width + cln_offset + cln) << 2;
 			unsigned int frg_pos = (str * (Foreground->Header.Width - Foreground->Header.Width % 4) + cln) << 2;
 			//*(uint64_t *)(bkg_ptr + bkg_pos) = *(uint64_t *)(frg_ptr + frg_pos);
