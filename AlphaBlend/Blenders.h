@@ -59,8 +59,8 @@ void BMP::Blend_V2  (BMP *Foreground, const uint32_t cln_offset, const uint32_t 
 		{
 			// Using formula: ((FC - BC) * FA) / 255 + BC where FC(BC) is Foreground(Background) color
 
-			__m128i Bg_0123 = _mm_load_si128(reinterpret_cast<const __m128i *>(&Image[BG_OFFSET]));
-			__m128i Fg_0123 = _mm_load_si128(reinterpret_cast<const __m128i *>(&Foreground->Image[FG_OFFSET]));
+			__m128i Bg_0123 = _mm_load_si128((__m128i *) (&Image[BG_OFFSET]));
+			__m128i Fg_0123 = _mm_load_si128((__m128i *) (&Foreground->Image[FG_OFFSET]));
 
 			//====================================================================
 			// Bg_0123:  |B0 G0 R0 A0|B1 G1 R1 A1|B2 G2 R2 A2|B3 G3 R3 A3|___  e
@@ -129,8 +129,8 @@ void BMP::Blend_V2  (BMP *Foreground, const uint32_t cln_offset, const uint32_t 
 			//                                                               | e
 			// Res_23:   |-- -- -- --|-- -- -- --|B2 G2 R2 --|B3 G3 R3 --|<--' s
 			//                                                                 s
-			__m128i Res_01 = _mm_shuffle_epi8(Fg_sub_Bg_01, pixels_01_compress);
-			__m128i Res_23 = _mm_shuffle_epi8(Fg_sub_Bg_23, pixels_23_compress);
+			__m128i Result_01 = _mm_shuffle_epi8(Fg_sub_Bg_01, pixels_01_compress);
+			__m128i Result_23 = _mm_shuffle_epi8(Fg_sub_Bg_23, pixels_23_compress);
 
 			//====================================================================
 			// Res_01:   |B0 G0 R0 --|B1 G1 R1 --|-- -- -- --|-- -- -- --|___
@@ -139,7 +139,7 @@ void BMP::Blend_V2  (BMP *Foreground, const uint32_t cln_offset, const uint32_t 
 			//                                                               | d
 			// Res_0123: |B0 G0 R0 --|B1 G1 R1 --|B2 G2 R2 --|B3 G3 R3 --|<--'
 			//
-			__m128i Res_0123 = _mm_add_epi8(Res_01, Res_23);
+			__m128i Result_0123 = _mm_add_epi8(Result_01, Result_23);
 
 			//====================================================================
 			// Res_0123: |B0 G0 R0 --|B1 G1 R1 --|B2 G2 R2 --|B3 G3 R3 --|___
@@ -148,9 +148,9 @@ void BMP::Blend_V2  (BMP *Foreground, const uint32_t cln_offset, const uint32_t 
 			//                                                               | d
 			// Res_0123: |B0 G0 R0 A0|B1 G1 R1 A1|B2 G2 R2 A2|B3 G3 R3 A3|<--'
 			//
-			Res_0123 = _mm_add_epi8(Res_0123, Bg_0123);
+			Result_0123 = _mm_add_epi8(Result_0123, Bg_0123);
 
-			_mm_store_si128(reinterpret_cast<__m128i *>(&Image[BG_OFFSET]), Res_0123);
+			_mm_store_si128((__m128i *) (&Image[BG_OFFSET]), Result_0123);
 		}
 	}
 
