@@ -16,6 +16,7 @@ const char STOP_LABELS_NAME[]  = ".stop_";
 
 int If_label_num    = 0;
 int While_label_num = 0;
+int Sqrt_label_num  = 0;
 
 //const char VAR_ADDR_REG[]      = "r8";
 
@@ -258,9 +259,12 @@ void WriteE (tree *node, FILE *output)
 			WriteE (node->right, output);
 			switch ((int) node->data)
 			{
-				#define FUNCTION(name, diff_description, asm_name) case name##NUM: fprintf(output, "%s\n", asm_name); break;
-				#include "DSL/DSL_function_descriptions.h"
-				#undef FUNCTION
+				case SQRT_NUM:
+					fprintf(output, SQRT, Sqrt_label_num, Sqrt_label_num, Sqrt_label_num, Sqrt_label_num);
+					break;
+				//#define FUNCTION(name, diff_description, asm_name) case name##NUM: fprintf(output, "%s\n", asm_name); break;
+				//#include "DSL/DSL_function_descriptions.h"
+				//#undef FUNCTION
 			}
 			break;
 

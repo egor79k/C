@@ -148,8 +148,8 @@ const char LN_[]     = "ln";
 const char LG_[]     = "lg";
 const char SQRT_[]   = "sqrt";
 
-const char A_SQRT_[] = "ROOT";
-const char A_[]      = "<Empty>";
+//const char A_SQRT_[] = "ROOT";     // |Moved to "Asm_commands.h" at the moment
+//const char A_[]      = "<Empty>";  // |
 
 
 //const char phrases[9][45] = {"It's obvious that:\n", "With missing part of transformations:\n", "You can deduce this formula yourself:\n", "By simple transformations we obtain:\n", "", "Anyone with half a brain knows that:\n", "You can find this formula in Wikipedia:\n", "I won't check it of course:\n", "I live this formula as an exercize:\n"};
