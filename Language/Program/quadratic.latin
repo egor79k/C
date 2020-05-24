@@ -1,23 +1,36 @@
-			Variabilis nulla assignare 0
+			Definire Capio bona:
+Primum: Variabilis figura assignare 0, Variabilis signum assignare 1, Variabilis numerus assignare 0, lego figura, si figura est 45
+	Primum: signum assignare -1, lego figura!, donec figura inaequale 10
+	Primum: numerus assignare numerus productum 10 adde bona figura subtrahere 48 simul, lego figura!,
+	reditum numerus productum signum!
+
+			Definire Monstro bona Variabilis numerus:
+Primum: scribo 10, si numerus est 0
+	Primum: scribo 48, reditum!, si numerus plusest -2147483648
+	Primum: numerus assignare numerus productum -1, scribo 45!, Variabilis multir assignare 1, donec numerus partem multir plus 0
+	Primum: multir assignare multir productum 10!, multir assignare multir partem 10, donec multir plus 0
+	Primum: scribo numerus partem multir adde 48, numerus assignare numerus subtrahere bona numerus partem multir simul productum multir, multir assignare multir partem 10!,
+	scribo 10, reditum!
+
 			Definire Principalis bona:
-Primum: Variabilis alpha assignare nulla, Variabilis beta assignare nulla, Variabilis gamma assignare nulla, Variabilis discrim assignare nulla, lego alpha, lego beta, lego gamma, si alpha inaequale nulla
-	Primum: si beta inaequale nulla
-		Primum: si gamma inaequale nulla
-			Primum: discrim assignare beta productum beta subtrahere 4 productum alpha productum gamma, si discrim est nulla
-				Primum: scribo 1, scribo bona nulla subtrahere beta adde sqrt bona discrim simul simul partem bona 2 productum alpha simul! alia
-				Primum: si discrim minus nulla
-					Primum: scribo nulla! alia
-					Primum: scribo 2, scribo bona nulla subtrahere beta adde sqrt bona discrim simul simul partem bona 2 productum alpha simul, scribo bona nulla subtrahere beta subtrahere sqrt bona discrim simul simul partem bona 2 productum alpha simul!!! alia
-			Primum: scribo 2, scribo nulla, scribo bona nulla subtrahere beta simul partem alpha!! alia
-		Primum: si gamma partem alpha minus nulla
-			Primum: scribo 2, scribo sqrt bona nulla subtrahere gamma partem alpha simul, scribo nulla subtrahere sqrt bona nulla subtrahere gamma partem alpha simul! alia
-			Primum: si gamma est nulla
-				Primum: scribo 1, scribo 0! alia
-				Primum: scribo 0!!!! alia
-	Primum: si beta inaequale nulla
-		Primum: si gamma inaequale nulla
-			Primum: scribo 1, scribo nulla subtrahere gamma partem beta! alia
-			Primum: scribo 1, scribo 0!! alia
-		Primum: si gamma inaequale nulla
-			Primum: scribo 0! alia
-			Primum: scribo -1!!!!
+Primum: Variabilis alpha assignare Capio bona:, Variabilis beta assignare Capio bona:, Variabilis gamma assignare Capio bona:, Variabilis discrim assignare 0, si alpha inaequale 0
+	Primum: si beta inaequale 0
+		Primum: si gamma inaequale 0
+			Primum: discrim assignare beta productum beta subtrahere 4 productum alpha productum gamma, si discrim est 0
+				Primum: scribo 49, Monstro bona bona 0 subtrahere beta adde sqrt bona discrim simul simul partem bona 2 productum alpha simul:! alia
+				Primum: si discrim minus 0
+					Primum: scribo 48! alia
+					Primum: scribo 50, Monstro bona bona 0 subtrahere beta adde sqrt bona discrim simul simul partem bona 2 productum alpha simul:, Monstro bona bona 0 subtrahere beta subtrahere sqrt bona discrim simul simul partem bona 2 productum alpha simul:!!! alia
+			Primum: scribo 50, scribo 48, Monstro bona bona 0 subtrahere beta simul partem alpha:!! alia
+		Primum: si gamma partem alpha minus 0
+			Primum: scribo 50, Monstro bona sqrt bona 0 subtrahere gamma partem alpha simul:, Monstro bona 0 subtrahere sqrt bona 0 subtrahere gamma partem alpha simul:! alia
+			Primum: si gamma est 0
+				Primum: scribo 49, scribo 48! alia
+				Primum: scribo 48!!!! alia
+	Primum: si beta inaequale 0
+		Primum: si gamma inaequale 0
+			Primum: scribo 49, Monstro bona 0 subtrahere gamma partem beta:! alia
+			Primum: scribo 49, scribo 48!! alia
+		Primum: si gamma inaequale 0
+			Primum: scribo 48! alia
+			Primum: scribo 45, scribo 49!!!, reditum!
