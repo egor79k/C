@@ -52,6 +52,19 @@ int main (int argc, const char **argv)
 }
 
 
+
+//===============================
+// BackEnd
+//===============================
+void BackEnd (tree *root, const char file_name[MAX_FILE_NAME])
+{
+	FILE *output = fopen (file_name, "w");
+	fprintf(output, "%s\n", ASM_BEGIN);
+	WriteAsm (root, output);
+}
+
+
+
 //===============================
 // Declaring global variables
 //===============================
@@ -67,6 +80,7 @@ tree *WriteGlobal (tree *node, FILE *output)
 	if (node->left != NULL) return WriteGlobal (node->left, output);
 	else return NULL;
 }
+
 
 
 //===============================
@@ -95,25 +109,21 @@ void WriteAsm (tree *node, FILE *output)
 					if (node->right != NULL)
 					{
 						WriteE (node->right, output);
-						fprintf(output, "\tpop rbx     ; Save up stack val\n");
-						fprintf(output, "\tpop rax     ; Save ret addr\n");
-						fprintf(output, "\tpush rbx    ; Push up stack val\n");
-						fprintf(output, "\tpush rax    ; Push ret addr\n");
+						fprintf(output, "%s", ASM_RET_VAL);
 					}
-					//fprintf (output, "push AX\npush %d\nsub\npop AX\nRETURN\n", MAX_VARIABLES_IN_BLOCK);
 					fprintf(output, "\tsub r8, %d\n\tret\n\n", MAX_VARIABLES_IN_BLOCK * VAR_SIZE);
 					break;
 
 				case PRINT_NUM:
 					WriteE (node->right, output);
-					fprintf (output, "\n%s\n", OUT);
+					fprintf (output, "\n%s\n", ASM_OUT);
 					break;
 
 				case READ_NUM:
 					tmp = (int) FindVar (node->right->data);
 					if (tmp < Global) fprintf (output, "\n\tmov rsi, loc_mem + %d\n\tadd rsi, r8\n", tmp * VAR_SIZE);
 					else fprintf (output, "\n\tmov rsi, loc_mem + %d\n", tmp * VAR_SIZE);
-					fprintf (output, "%s\n", IN);
+					fprintf (output, "%s\n", ASM_IN);
 					break;
 
 				default:
@@ -236,16 +246,6 @@ void WriteAsm (tree *node, FILE *output)
 }
 
 
-//===============================
-// BackEnd
-//===============================
-void BackEnd (tree *root, const char file_name[MAX_FILE_NAME])
-{
-	FILE *output = fopen (file_name, "w");
-	fprintf(output, "%s\n", ASM_BEGIN);
-	WriteAsm (root, output);
-}
-
 
 //===============================
 // Interpritation of expression
@@ -260,7 +260,8 @@ void WriteE (tree *node, FILE *output)
 			switch ((int) node->data)
 			{
 				case SQRT_NUM:
-					fprintf(output, SQRT, Sqrt_label_num, Sqrt_label_num, Sqrt_label_num, Sqrt_label_num);
+					fprintf(output, ASM_SQRT, Sqrt_label_num, Sqrt_label_num, Sqrt_label_num, Sqrt_label_num);
+					Sqrt_label_num++;
 					break;
 				//#define FUNCTION(name, diff_description, asm_name) case name##NUM: fprintf(output, "%s\n", asm_name); break;
 				//#include "DSL/DSL_function_descriptions.h"
