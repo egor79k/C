@@ -81,7 +81,7 @@ const char ASM_DIV[]      = "\n	pop rcx		; Div\n"
 
 const char ASM_CMP[]      = "\n	pop rcx		; Cmp\n"
 							"	pop rbx		\n"
-							"	cmp rcx, rbx\n\t"
+							"	cmp rcx, rbx\n\t";
 
 
 const char ASM_END[]      = "\n	mov rax, 0x3C	; End\n"
