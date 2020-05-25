@@ -90,8 +90,8 @@ const char ASM_END[]      = "\n	mov rax, 0x3C	; End\n"
 							"	ret 			\n\n";
 
 
-const char ASM_LOCAL_VAR  = "	%s qword [loc_mem + rbp + %d]\n"
-const char ASM_GLOBAL_VAR = "	%s qword [loc_mem + %d]\n"
+const char ASM_LOCAL_VAR  = "	%s qword [loc_mem + rbp + %d]\n";
+const char ASM_GLOBAL_VAR = "	%s qword [loc_mem + %d]\n";
 const char ASM_POP[]      = "pop";
 const char ASM_PUSH[]     = "push";
 const char ASM_JMP[]      = "jmp";
