@@ -153,7 +153,7 @@ void WriteAsm (tree *node, FILE *output)
 						if (node->left != NULL) WriteE (node->left, output);
 						else fprintf (output, "\t%s %d\n", ASM_PUSH, NOT_INITIALAISED_VAR);
 					}
-					fprintf (output, ASM_LOCAL_VAR, ASM_POP, (int) FindVar (node->right->data) * VAR_SIZE);
+					fprintf (output, ASM_LOC_VAR, ASM_POP, (int) FindVar (node->right->data) * VAR_SIZE);
 					break;
 
 
@@ -185,8 +185,8 @@ void WriteAsm (tree *node, FILE *output)
 				case ASSN_NUM:
 					WriteE (node->right, output);
 					tmp = (int) FindVar (node->left->data);
-					if (tmp < Global) fprintf (output, ASM_LOCAL_VAR, ASM_POP, tmp * VAR_SIZE);
-					else fprintf (output, ASM_GLOBAL_VAR, ASM_POP, tmp * VAR_SIZE);
+					if (tmp < Global) fprintf (output, ASM_LOC_VAR, ASM_POP, tmp * VAR_SIZE);
+					else fprintf (output, ASM_GLOB_VAR, ASM_POP, tmp * VAR_SIZE);
 					break;
 
 
@@ -312,8 +312,8 @@ void WriteE (tree *node, FILE *output)
 
 		case VARIABLE:
 			tmp = (int) FindVar (node->data);
-			if (tmp < Global) fprintf (output, ASM_LOCAL_VAR, ASM_PUSH, tmp * VAR_SIZE);
-			else fprintf (output, ASM_GLOBAL_VAR, ASM_PUSH, tmp * VAR_SIZE);
+			if (tmp < Global) fprintf (output, ASM_LOC_VAR, ASM_PUSH, tmp * VAR_SIZE);
+			else fprintf (output, ASM_GLOB_VAR, ASM_PUSH, tmp * VAR_SIZE);
 			break;
 
 
