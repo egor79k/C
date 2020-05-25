@@ -151,9 +151,9 @@ void WriteAsm (tree *node, FILE *output)
 					if (node->parent->data != VARLIST_NUM)
 					{
 						if (node->left != NULL) WriteE (node->left, output);
-						else fprintf (output, "\tpush %d\n", NOT_INITIALAISED_VAR);
+						else fprintf (output, "\t%s %d\n", ASM_PUSH, NOT_INITIALAISED_VAR);
 					}
-					fprintf (output, "\tpop qword [loc_mem + rbp + %d]\n", (int) FindVar (node->right->data) * VAR_SIZE);
+					fprintf (output, ASM_LOCAL_VAR, ASM_POP, (int) FindVar (node->right->data) * VAR_SIZE);
 					break;
 
 
@@ -185,8 +185,8 @@ void WriteAsm (tree *node, FILE *output)
 				case ASSN_NUM:
 					WriteE (node->right, output);
 					tmp = (int) FindVar (node->left->data);
-					if (tmp < Global) fprintf (output, "\tpop qword [loc_mem + rbp + %d]\n", tmp * VAR_SIZE);
-					else fprintf (output, "\tpop qword [loc_mem + %d]\n", tmp * VAR_SIZE);
+					if (tmp < Global) fprintf (output, ASM_LOCAL_VAR, ASM_POP, tmp * VAR_SIZE);
+					else fprintf (output, ASM_GLOBAL_VAR, ASM_POP, tmp * VAR_SIZE);
 					break;
 
 
@@ -202,16 +202,18 @@ void WriteAsm (tree *node, FILE *output)
 					int Cur_label = If_label_num++;
 					WriteE (node->left->right, output);
 					WriteE (node->left->left, output);
-					fprintf(output, "\tpop rcx\n\tpop rbx\n\tcmp rcx, rbx\n\t");
+					fprintf(output, ASM_CMP);
+
 					switch ((int) node->left->data)
 					{
 						#define JMP(asm, num, l_num) case num: fprintf (output, #asm); break;
 						#include "DSL/DSL_jumps.h"
 						#undef JMP
 					}
+
 					fprintf (output, " %s%d\n", IF_LABELS_NAME, Cur_label);
 					WriteAsm (node->right->right, output);
-					if (node->right->left != NULL) fprintf (output, "\tjmp %s%d\n", ELSE_LABELS_NAME, Cur_label);
+					if (node->right->left != NULL) fprintf (output, "\t%s %s%d\n", ASM_JMP, ELSE_LABELS_NAME, Cur_label);
 					fprintf (output, "%s%d:\n", IF_LABELS_NAME, Cur_label);
 					if (node->right->left != NULL)
 					{
@@ -226,16 +228,18 @@ void WriteAsm (tree *node, FILE *output)
 					fprintf(output, "%s%d:\n", WHILE_LABELS_NAME, While_label_num);
 					WriteE (node->left->right, output);
 					WriteE (node->left->left, output);
-					fprintf(output, "\tpop rcx\n\tpop rbx\n\tcmp rcx, rbx\n\t");
+					fprintf(output, ASM_CMP);
+
 					switch ((int) node->left->data)
 					{
 						#define JMP(asm, num, l_num) case num: fprintf (output, #asm); break;
 						#include "DSL/DSL_jumps.h"
 						#undef JMP
 					}
+
 					fprintf (output, " %s%d\n", STOP_LABELS_NAME, While_label_num);
 					WriteAsm (node->right, output);
-					fprintf(output, "jmp %s%d\n%s%d:\n", WHILE_LABELS_NAME, While_label_num++, STOP_LABELS_NAME, While_label_num);
+					fprintf(output, "\t%s %s%d\n%s%d:\n", ASM_JMP, WHILE_LABELS_NAME, While_label_num++, STOP_LABELS_NAME, While_label_num);
 					break;
 
 
@@ -308,13 +312,13 @@ void WriteE (tree *node, FILE *output)
 
 		case VARIABLE:
 			tmp = (int) FindVar (node->data);
-			if (tmp < Global) fprintf (output, "\tpush qword [loc_mem + rbp + %d]\n", tmp * VAR_SIZE);
-			else fprintf (output, "\tpush qword [loc_mem + %d]\n", tmp * VAR_SIZE);
+			if (tmp < Global) fprintf (output, ASM_LOCAL_VAR, ASM_PUSH, tmp * VAR_SIZE);
+			else fprintf (output, ASM_GLOBAL_VAR, ASM_PUSH, tmp * VAR_SIZE);
 			break;
 
 
 		case CONSTANT:
-			fprintf(output, "\tpush %d\n", (int) node->data);
+			fprintf(output, "\t%s %d\n", ASM_PUSH, (int) node->data);
 			break;
 	}
 	return;
