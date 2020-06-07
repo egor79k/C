@@ -6,8 +6,8 @@
 #include "DSL/DSL_definitions.h"
 #include "Common.cpp"
 
-
 #define BKND_ERROR "\e[1;35mBackend: \e[31merror:\e[0m"
+
 
 const char IF_LABELS_NAME[]    = ".if_";
 const char ELSE_LABELS_NAME[]  = ".else_";
@@ -48,6 +48,8 @@ int main (int argc, const char **argv)
 	}
 
 	BackEnd (root, argv[2]);
+
+	return 0;
 }
 
 
@@ -60,6 +62,8 @@ void BackEnd (tree *root, const char file_name[MAX_FILE_NAME])
 	FILE *output = fopen (file_name, "w");
 	fprintf(output, "%s\n", ASM_BEGIN);
 	WriteAsm (root, output);
+	fclose (output);
+	return;
 }
 
 
