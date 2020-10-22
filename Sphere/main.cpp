@@ -20,7 +20,7 @@ struct Sphere
 struct Lamp
 {
 	Vector3<int> pos;
-	sf::Color color; // OR double intensivity;
+	sf::Color color;
 };
 
 
@@ -30,9 +30,11 @@ sf::Color operator* (sf::Color col, double k)
 }
 
 
-void RenderSphere (const Sphere &S, const Vector3<int> &Lamp)
+void RenderSphere (const Sphere &S, const Lamp &L)
 {
+	const Vector3<int> camera = {0, 0, S.radius * 2};
 	Vector3<int> r;
+	const double I_flare_k = 0.03;
 
 	for (r.y = -S.radius; r.y < S.radius; ++r.y)
 		for (r.x = -S.radius; r.x < S.radius; ++r.x)
@@ -40,8 +42,12 @@ void RenderSphere (const Sphere &S, const Vector3<int> &Lamp)
 			if (r.y * r.y + r.x * r.x < S.radius * S.radius)
 			{
 				r.z = sqrt (S.radius * S.radius - r.x * r.x - r.y * r.y);
-				double cos = (((Lamp - r) ^ r) + 1) / 2;
-				matrix[r.y + S.center.y][r.x + S.center.x] = S.color * cos;
+				Vector3<int> ldv = L.pos - r; // Lamp Direction Vector (from current point)
+				double I_diffuse = ldv ^ r;
+				double I_flares = (ldv - 2 * (ldv.project (r))) ^ (camera - r);
+				double I = ((I_diffuse + 1) / 2) + (pow ((I_flares + 1) / 2, 24) + I_flare_k) / 3;
+				if (I > 1) I = 1;
+				matrix[r.y + S.center.y][r.x + S.center.x] = S.color * I;
 			}
 		}
 
@@ -50,9 +56,9 @@ void RenderSphere (const Sphere &S, const Vector3<int> &Lamp)
 
 int main ()
 {
-	const Sphere Sph_1 = {150, {Window_side / 2, Window_side / 2, 0}, {0, 255, 0, 255}};
+	const Sphere Sph_1 = {200, {Window_side / 2, Window_side / 2, 0}, {50, 255, 50, 255}};
 	const int Max_lamp_x = 300;
-	Vector3<int> Lamp = {-Max_lamp_x, -100, 250};
+	Lamp lamp = {{-Max_lamp_x, -100, 300}, {255, 255, 255, 255}};
 
 	sf::Texture image;
 	image.create (Window_side, Window_side);
@@ -75,11 +81,11 @@ int main ()
 		}
 
 		window.clear (sf::Color::Black);
-		RenderSphere (Sph_1, Lamp);
+		RenderSphere (Sph_1, lamp);
 		image.update ((sf::Uint8 *) &matrix[0][0], Window_side, Window_side, 0, 0);
-		++Lamp.x;
-		if (Lamp.x >= Max_lamp_x)
-			Lamp.x = -Max_lamp_x;
+		++lamp.pos.x;
+		if (lamp.pos.x >= Max_lamp_x)
+			lamp.pos.x = -Max_lamp_x;
 
 		window.draw (sprite);
 		window.display();
